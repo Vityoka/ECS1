@@ -5,8 +5,8 @@
 External/
 Debug/
 Release/
-Collision3/*
-!Collision3/res/
-!Collision3/src/
-!Collision3/*.vcxproj
-!Collision3/*.vcxproj.filters
+ECS1/*
+!ECS1/res/
+!ECS1/src/
+!ECS1/*.vcxproj
+!ECS1/*.vcxproj.filters
