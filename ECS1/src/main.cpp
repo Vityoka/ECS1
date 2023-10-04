@@ -2,6 +2,7 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/Audio.hpp>
 #include "game.h"
+#include "entity.h"
 
 int main()
 {

@@ -4,6 +4,7 @@
 #include <iostream>
 #include <SFML/Graphics.hpp>
 #include <SFML/Audio.hpp>
+#include "entity_manager.h"
 
 enum GameState : char{
   GAME_INIT = 0,
@@ -37,6 +38,7 @@ private:
   sf::Text m_textGameOver;
   sf::Font m_font;
 
+  EntityManager m_entityManager;
   GameState m_gameState;
 
   void pollEvents();

@@ -1,4 +1,5 @@
 #include "game.h"
+#include "vec2f.h"
 
 Game::Game(sf::RenderWindow& window) : m_window(window)
 {
@@ -9,6 +10,8 @@ void Game::init()
 {
   // Set game state
   m_gameState = GameState::GAME_RUNNING;
+
+  auto entity = m_entityManager.addEntity("enemy");
 
   // Load resources
   //if (!m_soundBufferBallBrickCollision.loadFromFile("./res/audio/explosion.wav"))
@@ -91,6 +94,8 @@ void Game::update()
   m_window.clear(sf::Color::Black);
   pollEvents();
 
+  m_entityManager.update();
+
   switch(m_gameState)
   {
     case GAME_INIT:
@@ -112,5 +117,5 @@ void Game::update()
 
 void Game::updateNormal()
 {
-  
+
 }

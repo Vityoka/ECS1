@@ -19,11 +19,17 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\entity.cpp" />
+    <ClCompile Include="src\entity_manager.cpp" />
     <ClCompile Include="src\game.cpp" />
     <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\vec2f.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\entity.h" />
+    <ClInclude Include="src\entity_manager.h" />
     <ClInclude Include="src\game.h" />
+    <ClInclude Include="src\vec2f.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
