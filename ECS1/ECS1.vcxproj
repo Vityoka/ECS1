@@ -26,6 +26,7 @@
     <ClCompile Include="src\vec2f.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\components.h" />
     <ClInclude Include="src\entity.h" />
     <ClInclude Include="src\entity_manager.h" />
     <ClInclude Include="src\game.h" />

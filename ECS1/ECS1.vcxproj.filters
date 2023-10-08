@@ -44,5 +44,8 @@
     <ClInclude Include="src\vec2f.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\components.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
