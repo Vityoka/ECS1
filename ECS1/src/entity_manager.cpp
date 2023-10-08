@@ -1,5 +1,14 @@
 #include "entity_manager.h"
 #include "entity.h"
+#include <algorithm>
+
+struct IsAlive
+{
+  bool operator()(std::shared_ptr<Entity> entity)
+  {
+    return entity->isAlive();
+  }
+};
 
 EntityManager::EntityManager()
 {
@@ -37,6 +46,7 @@ void EntityManager::update()
   // Loop through the entities that are waiting to be deleted by their isAlive flag
   for (std::shared_ptr<Entity> entity : m_entities)
   {
+
     if (!entity->isAlive())
     {
       // If we want to delete an element from a vector that we are just iterating through casues
@@ -44,7 +54,14 @@ void EntityManager::update()
       // C++ has a function which can solve this: remove_if()
 
       // TODO
-
+      
     }
   }
+  auto lastAliveElement = std::remove_if(m_entities.begin(), m_entities.end(), IsAlive());
+  m_entities.erase(lastAliveElement, m_entities.end());
+
+  // TODO: remove from the map too.
 }
+
+
+
