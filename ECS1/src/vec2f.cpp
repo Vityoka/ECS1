@@ -13,7 +13,7 @@ Vec2f::Vec2f(float x, float y)
   this->y = y;
 }
 
-Vec2f operator+ (Vec2f lhs, Vec2f rhs)
+Vec2f operator+ (const Vec2f& lhs, const Vec2f& rhs)
 {
   Vec2f retVal;
   retVal.x = lhs.x + rhs.x;
@@ -21,7 +21,7 @@ Vec2f operator+ (Vec2f lhs, Vec2f rhs)
   return retVal;
 }
 
-Vec2f operator- (Vec2f lhs, Vec2f rhs)
+Vec2f operator- (const Vec2f& lhs, const Vec2f& rhs)
 {
   Vec2f retVal;
   retVal.x = lhs.x - rhs.x;
@@ -29,24 +29,29 @@ Vec2f operator- (Vec2f lhs, Vec2f rhs)
   return retVal;
 }
 
-float operator* (Vec2f lhs, Vec2f rhs)
+float operator* (const Vec2f& lhs, const Vec2f& rhs)
 {
   float dotProduct = lhs.x * rhs.x + lhs.y * rhs.y;
   return dotProduct;
 }
 
-bool operator== (Vec2f lhs, Vec2f rhs)
+bool operator== (const Vec2f& lhs, const Vec2f& rhs)
 {
   return (lhs.x == rhs.x) && (lhs.y == rhs.y);
 }
 
-void operator+= (Vec2f lhs, Vec2f rhs)
+bool operator!= (const Vec2f& lhs, const Vec2f& rhs)
+{
+  return (lhs.x != rhs.x) || (lhs.y != rhs.y);
+}
+
+void operator+= (Vec2f& lhs, const Vec2f& rhs)
 {
   lhs.x += rhs.x;
   lhs.y += rhs.y;
 }
 
-float Vec2f::distance(Vec2f lhs, Vec2f rhs)
+float Vec2f::distance(const Vec2f& lhs, const Vec2f& rhs)
 {
   Vec2f distanceVector = lhs - rhs;
   return distanceVector.length();

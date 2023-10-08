@@ -10,6 +10,15 @@ struct IsAlive
   }
 };
 
+struct IsNotAlive
+{
+  bool operator()(std::shared_ptr<Entity> entity)
+  {
+    return !entity->isAlive();
+  }
+};
+
+
 EntityManager::EntityManager()
 {
 
@@ -57,11 +66,14 @@ void EntityManager::update()
       
     }
   }
-  auto lastAliveElement = std::remove_if(m_entities.begin(), m_entities.end(), IsAlive());
+  auto lastAliveElement = std::remove_if(m_entities.begin(), m_entities.end(), IsNotAlive());
   m_entities.erase(lastAliveElement, m_entities.end());
 
   // TODO: remove from the map too.
 }
 
-
+EntityVector& EntityManager::getEntities()
+{
+  return m_entities;
+}
 

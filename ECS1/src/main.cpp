@@ -6,20 +6,8 @@
 
 int main()
 {
-  // create window and game
-  sf::RenderWindow window(sf::VideoMode(800, 600), "ECS1");
-  window.setFramerateLimit(60);
-
-  Game game(window);
-
-  while (game.isRunning())
-  {
-    game.update();
-    game.render();
-  }
-
-  int a;
-  std::cin >> a;
+  Game game;
+  game.run();
 
   return 0;
 }

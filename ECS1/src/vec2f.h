@@ -17,12 +17,13 @@ public:
   void normalize();
   void rotate(float angle);
   void scale(float scaleFactor);
-  static float distance(Vec2f lhs, Vec2f rhs);
+  static float distance(const Vec2f& lhs, const Vec2f& rhs);
 };
 
-Vec2f operator+(Vec2f lhs, Vec2f rhs);
-Vec2f operator-(Vec2f lhs, Vec2f rhs);
-float operator* (Vec2f lhs, Vec2f rhs); // implements dot product (scalar product, inner product)
-bool operator== (Vec2f lhs, Vec2f rhs);
-void operator+= (Vec2f lhs, Vec2f rhs);
+Vec2f operator+(const Vec2f& lhs, const Vec2f& rhs);
+Vec2f operator-(const Vec2f& lhs, const Vec2f& rhs);
+float operator* (const Vec2f& lhs, const Vec2f& rhs); // implements dot product (scalar product, inner product)
+bool operator== (const Vec2f& lhs, const Vec2f& rhs);
+bool operator!= (const Vec2f& lhs, const Vec2f& rhs);
+void operator+= (Vec2f& lhs, const Vec2f& rhs);
 

@@ -5,6 +5,7 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/Audio.hpp>
 #include "entity_manager.h"
+#include <memory>
 
 enum GameState : char{
   GAME_INIT = 0,
@@ -15,21 +16,26 @@ enum GameState : char{
 class Game
 {
 public:
-  Game(sf::RenderWindow& window);
-  void init();
-  void updateNormal();
-  void update();
-  void render();
-  bool isRunning() const;
+  Game();
+
+  void run();
 
 private:
-  sf::Event m_event;
-  sf::RenderWindow& m_window;
+  void init();
+
+  // Systems
+  void sUserInput();
+  void sRender();
+  void sTransform();
+
+  void updateNormal();
+  void update();
+  //void pollEvents();
+
+  sf::RenderWindow m_window;
 
   sf::Clock m_clock;
   float m_deltaTime;
-
-  //std::vector<Entity*> m_entities;
 
   sf::SoundBuffer m_soundBufferBallBrickCollision;
   sf::SoundBuffer m_soundBufferBallPlayerCollision;
@@ -39,10 +45,11 @@ private:
   sf::Font m_font;
 
   EntityManager m_entityManager;
+  std::shared_ptr<Entity> m_player;
+
   GameState m_gameState;
 
-  void pollEvents();
-
+  bool m_paused = false;
 };
 
 #endif //GAME_H_GUARD

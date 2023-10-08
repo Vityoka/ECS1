@@ -2,26 +2,26 @@
 #include "vec2f.h"
 #include <SFML/Graphics.hpp>
 
-class cTransform
+class CTransform
 {
 public:
     Vec2f pos = {};
     Vec2f velocity = {};
     float angle;
 
-    cTransform(const Vec2f& p, const Vec2f& v, float a)
+    CTransform(const Vec2f& p, const Vec2f& v, float a)
         :pos(p), velocity(v), angle(a){};
 };
 
-class cShape
+class CShape
 {
 public:
     sf::CircleShape circle;
 
-    cShape(const sf::CircleShape c)
+    CShape(const sf::CircleShape c)
         :circle(c){};
 
-    cShape(int numOfVertices, float radius, const sf::Color& fillColor, const sf::Color& outlineColor, const float thickness)
+    CShape(int numOfVertices, float radius, const sf::Color& fillColor, const sf::Color& outlineColor = sf::Color::White, const float thickness = 1.0F)
         :circle(radius, numOfVertices)
     {
         circle.setFillColor(fillColor);
@@ -35,21 +35,21 @@ public:
 };
 
 
-class cCollision
+class CCollision
 {
 public:
     float radius = 0;
-    cCollision(float r) : radius(r){};
+    CCollision(float r) : radius(r){};
 };
 
-class cScore
+class CScore
 {
 public:
     int score = 0;
-    cScore(int s) : score(s){};
+    CScore(int s) : score(s){};
 };
 
-class cInput
+class CInput
 {
 public:
     bool up = false;
@@ -61,15 +61,15 @@ public:
     bool P = false;
     bool ESC = false;
 
-    cInput(){};
+    CInput(){};
 };
 
-class cLifespan
+class CLifespan
 {
 public:
     int totalLifespan = 0;
     int remainingLifespan = 0;
-    cLifespan(int totalLifespan, int remainingLifespan)
+    CLifespan(int totalLifespan, int remainingLifespan)
         : totalLifespan(totalLifespan)
         , remainingLifespan(totalLifespan){};
 };
