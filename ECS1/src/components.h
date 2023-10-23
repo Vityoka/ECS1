@@ -73,3 +73,17 @@ public:
         : totalLifespan(totalLifespan)
         , remainingLifespan(totalLifespan){};
 };
+
+class CBoundingBox
+{
+public:
+  // Extreme values for the axis aligned bounding boxes
+  float top = 0.0F;
+  float bottom = 0.0F;
+  float left = 0.0F;
+  float right = 0.0F;
+  // Radius for circular bounding box
+  float radius = 0.0F;
+
+  CBoundingBox() {};
+};

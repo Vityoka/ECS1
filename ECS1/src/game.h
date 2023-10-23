@@ -27,10 +27,7 @@ private:
   void sUserInput();
   void sRender();
   void sTransform();
-
-  void updateNormal();
-  void update();
-  //void pollEvents();
+  void sCollision();
 
   sf::RenderWindow m_window;
 

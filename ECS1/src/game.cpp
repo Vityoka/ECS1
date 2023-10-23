@@ -28,6 +28,8 @@ void Game::init()
   m_player->cInput = playerInput;
   Vec2f pos (100, 100);
   Vec2f velocity (0, 0);
+  std::shared_ptr<CBoundingBox> playerBBox = std::make_shared<CBoundingBox>();
+  m_player->cBoundingBox = playerBBox;
   std::shared_ptr<CTransform> playerTransform = std::make_shared<CTransform>(pos, velocity, 0.0F);
   m_player->cTransform = playerTransform;
 
@@ -52,6 +54,7 @@ void Game::run()
     sUserInput();
     sTransform();
     sRender();
+    sCollision();
     
     m_entityManager.update();
   }
@@ -164,4 +167,35 @@ void Game::sTransform()
     //entity->cTransform->pos += entity->cTransform->velocity;
     entity->cShape->circle.setPosition(entity->cTransform->pos.x, entity->cTransform->pos.y);
   }
+}
+
+void Game::sCollision()
+{
+  // Check collision with window boundaries
+  for (auto& entity : m_entityManager.getEntities())
+  {
+    entity->cBoundingBox->left = entity->cShape->circle.getGlobalBounds().left;
+    entity->cBoundingBox->right = entity->cShape->circle.getGlobalBounds().left + entity->cShape->circle.getGlobalBounds().width;
+    entity->cBoundingBox->top = entity->cShape->circle.getGlobalBounds().top ;
+    entity->cBoundingBox->bottom = entity->cShape->circle.getGlobalBounds().top + entity->cShape->circle.getGlobalBounds().height;
+
+    bool isCollision = false;
+    if (entity->cBoundingBox->left < 0.0F ||
+        entity->cBoundingBox->right > m_window.getSize().x ||
+        entity->cBoundingBox->top < 0.0F ||
+        entity->cBoundingBox->bottom > m_window.getSize().y)
+    {
+      isCollision = true;
+
+      // Debug log
+      std::cout << "collision with window edges" << std::endl;
+
+      // TODO: Calculate penetration depth
+
+      // TODO: Resolve collision
+    }
+  }
+
+  // TODO: Check collision with other entities
+
 }
