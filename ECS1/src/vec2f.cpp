@@ -88,3 +88,11 @@ void Vec2f::scale(float scaleFactor)
   x *= scaleFactor;
   y *= scaleFactor;
 }
+
+Vec2f Vec2f::polarToDescartes(float magnitude, float angle)
+{
+  Vec2f retVal;
+  retVal.x = magnitude * cos(angle);
+  retVal.y = magnitude * sin(angle);
+  return retVal;
+}

@@ -22,12 +22,16 @@ public:
 
 private:
   void init();
+  void spawnPlayer();
 
   // Systems
   void sUserInput();
   void sRender();
   void sTransform();
   void sCollision();
+  void sEnemySpawner();
+
+  uint64_t m_currentFrame;
 
   sf::RenderWindow m_window;
 

@@ -1,10 +1,23 @@
 #include "game.h"
 #include "vec2f.h"
 #include <iostream>
+#include <random>
 
 Game::Game() 
 {
   init();
+}
+
+void Game::spawnPlayer()
+{
+  m_player = m_entityManager.addEntity("player");
+  m_player->cShape = std::make_shared<CShape>(3, 10, sf::Color::Blue);
+  m_player->cInput = std::make_shared<CInput>();
+  m_player->cBoundingBox = std::make_shared<CBoundingBox>();
+
+  Vec2f pos (100, 100);
+  Vec2f velocity (0, 0);
+  m_player->cTransform = std::make_shared<CTransform>(pos, velocity, 0.0F);
 }
 
 void Game::init()
@@ -12,6 +25,7 @@ void Game::init()
   // Create game window
   m_window.create(sf::VideoMode(800, 600), "ECS1");
   m_window.setFramerateLimit(60);
+  m_currentFrame = 0U;
 
   // Time control. Currently overriden with constant to support debugging.
   //m_deltaTime = m_clock.restart().asSeconds();  
@@ -21,17 +35,7 @@ void Game::init()
   // Set game state
   m_gameState = GameState::GAME_RUNNING;
 
-  m_player = m_entityManager.addEntity("player");
-  std::shared_ptr<CShape> playerShape = std::make_shared<CShape>(3, 10, sf::Color::Blue);
-  m_player->cShape = playerShape;
-  std::shared_ptr<CInput> playerInput = std::make_shared<CInput>();
-  m_player->cInput = playerInput;
-  Vec2f pos (100, 100);
-  Vec2f velocity (0, 0);
-  std::shared_ptr<CBoundingBox> playerBBox = std::make_shared<CBoundingBox>();
-  m_player->cBoundingBox = playerBBox;
-  std::shared_ptr<CTransform> playerTransform = std::make_shared<CTransform>(pos, velocity, 0.0F);
-  m_player->cTransform = playerTransform;
+  spawnPlayer();
 
   // Load resources
   //if (!m_soundBufferBallBrickCollision.loadFromFile("./res/audio/explosion.wav"))
@@ -55,8 +59,11 @@ void Game::run()
     sTransform();
     sRender();
     sCollision();
+    sEnemySpawner();
     
     m_entityManager.update();
+
+    m_currentFrame++;
   }
 }
 
@@ -147,24 +154,28 @@ void Game::sTransform()
   {
     if (entity->getTag() == "player")
     {
+      const float playerSpeed = 5.0F;
       if (entity->cInput->left)
       {
-        entity->cTransform->pos.x += -5.0F;
+        entity->cTransform->pos.x += -playerSpeed;
       }
       if (entity->cInput->right)
       {
-        entity->cTransform->pos.x += 5.0F;
+        entity->cTransform->pos.x += playerSpeed;
       }
       if (entity->cInput->down)
       {
-        entity->cTransform->pos.y += 5.0F;
+        entity->cTransform->pos.y += playerSpeed;
       }
       if (entity->cInput->up)
       {
-        entity->cTransform->pos.y += -5.0F;
+        entity->cTransform->pos.y += -playerSpeed;
       }
     }
-    //entity->cTransform->pos += entity->cTransform->velocity;
+    if (entity->getTag() == "enemy")
+    {
+      entity->cTransform->pos += entity->cTransform->velocity;
+    }
     entity->cShape->circle.setPosition(entity->cTransform->pos.x, entity->cTransform->pos.y);
   }
 }
@@ -174,28 +185,60 @@ void Game::sCollision()
   // Check collision with window boundaries
   for (auto& entity : m_entityManager.getEntities())
   {
+    bool isCollision = false;
+    
+    // Calculate bounding boxes for the entities
     entity->cBoundingBox->left = entity->cShape->circle.getGlobalBounds().left;
     entity->cBoundingBox->right = entity->cShape->circle.getGlobalBounds().left + entity->cShape->circle.getGlobalBounds().width;
     entity->cBoundingBox->top = entity->cShape->circle.getGlobalBounds().top ;
     entity->cBoundingBox->bottom = entity->cShape->circle.getGlobalBounds().top + entity->cShape->circle.getGlobalBounds().height;
 
-    bool isCollision = false;
+    // Detect and resolve collision with window edges
     if (entity->cBoundingBox->left < 0.0F ||
-        entity->cBoundingBox->right > m_window.getSize().x ||
-        entity->cBoundingBox->top < 0.0F ||
-        entity->cBoundingBox->bottom > m_window.getSize().y)
+        entity->cBoundingBox->right > m_window.getSize().x)
     {
       isCollision = true;
-
-      // Debug log
-      std::cout << "collision with window edges" << std::endl;
-
-      // TODO: Calculate penetration depth
-
-      // TODO: Resolve collision
+      std::cout << "collision with window left/right edges" << std::endl;
+      entity->cTransform->velocity.x *= -1.0F;
     }
+    if (entity->cBoundingBox->top < 0.0F ||
+      entity->cBoundingBox->bottom > m_window.getSize().y)
+    {
+      isCollision = true;
+      std::cout << "collision with window top/bottom edges" << std::endl;
+      entity->cTransform->velocity.y *= -1.0F;
+    }
+
+    // Check collision with other entities
+    // TODO: Detect collision with other entities
+    // TODO: Calculate penetration depth
+    // TODO: Resolve collision
   }
+}
 
-  // TODO: Check collision with other entities
+void Game::sEnemySpawner()
+{
+  static uint64_t lastEnemySpawnedFrame = 0U;
+  constexpr uint64_t enemySpawnFrequencyInFrames = 60*2;
 
+  std::random_device randomDevice;
+  std::mt19937 mt(randomDevice());
+  std::uniform_real_distribution<double> speedDistribution(1.0, 4.0);
+  std::uniform_real_distribution<double> angleDistribution(0.0, 2*3.14);
+
+  if ((m_currentFrame - lastEnemySpawnedFrame) > enemySpawnFrequencyInFrames)
+  {
+    std::shared_ptr<Entity> enemy = m_entityManager.addEntity("enemy");
+
+    std::shared_ptr<CShape> enemyShape = std::make_shared<CShape>(3, 10, sf::Color::Blue);
+    enemy->cShape = enemyShape;
+    Vec2f pos (300, 300);
+    Vec2f velocity = Vec2f::polarToDescartes(speedDistribution(mt), angleDistribution(mt));
+    std::shared_ptr<CBoundingBox> enemyBBox = std::make_shared<CBoundingBox>();
+    enemy->cBoundingBox = enemyBBox;
+    std::shared_ptr<CTransform> enemyTransform = std::make_shared<CTransform>(pos, velocity, 0.0F);
+    enemy->cTransform = enemyTransform;
+
+    lastEnemySpawnedFrame = m_currentFrame;
+  }
 }

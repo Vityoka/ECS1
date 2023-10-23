@@ -18,6 +18,7 @@ public:
   void rotate(float angle);
   void scale(float scaleFactor);
   static float distance(const Vec2f& lhs, const Vec2f& rhs);
+  static Vec2f polarToDescartes(float magnitude, float angle);
 };
 
 Vec2f operator+(const Vec2f& lhs, const Vec2f& rhs);
