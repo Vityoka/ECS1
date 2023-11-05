@@ -56,7 +56,7 @@ void Game::run()
   while(m_window.isOpen())
   {
     sUserInput();
-    sTransform();
+    sMovement();
     sRender();
     sCollision();
     sEnemySpawner();
@@ -82,18 +82,35 @@ void Game::sUserInput()
         m_window.close();
         break;
       }
-      // Mouse click event
+      // Mouse button pressed event
       case sf::Event::MouseButtonPressed:
       {
-        if (m_gameState == GameState::GAME_INIT)
+        if (event.mouseButton.button == sf::Mouse::Button::Left)
         {
-          m_gameState = GameState::GAME_RUNNING;
+          std::cout << "Left mouse button was clicked at position: " << "x: " << event.mouseButton.x << "y: " << event.mouseButton.y << std::endl; // log message
+          spawnBullet( Vec2f(event.mouseButton.x, event.mouseButton.y) );
         }
+        if (event.mouseButton.button == sf::Mouse::Button::Right)
+        {
+          std::cout << "Right mouse button was clicked at position: " << "x: " << event.mouseButton.x << "y: " << event.mouseButton.y << std::endl; // log message
+        }
+        break;
+      }
+      // Mouse button released event
+      case sf::Event::MouseButtonReleased:
+      {
         break;
       }
       // Keyboard pressed event
       case sf::Event::KeyPressed:
       {
+        // If any keyboard is pressed go to the next game state
+        if (m_gameState == GameState::GAME_INIT)
+        {
+          m_gameState = GameState::GAME_RUNNING;
+          std::cout << "Game has been started" << std::endl; 
+        }
+
         //std::cout << event.key.code << std::endl; // log message
         if (m_player->cInput) // Check whether the entity has the cInput component available
         {
@@ -102,6 +119,7 @@ void Game::sUserInput()
           if (event.key.code == sf::Keyboard::Key::Left) m_player->cInput->left = true;
           if (event.key.code == sf::Keyboard::Key::Right) m_player->cInput->right = true;
         }
+
         break;
       }
       case sf::Event::KeyReleased:
@@ -148,7 +166,7 @@ void Game::sRender()
   m_window.display();
 }
 
-void Game::sTransform()
+void Game::sMovement()
 {
   for (auto& entity : m_entityManager.getEntities())
   {
@@ -198,14 +216,14 @@ void Game::sCollision()
         entity->cBoundingBox->right > m_window.getSize().x)
     {
       isCollision = true;
-      std::cout << "collision with window left/right edges" << std::endl;
+      //std::cout << "collision with window left/right edges" << std::endl;
       entity->cTransform->velocity.x *= -1.0F;
     }
     if (entity->cBoundingBox->top < 0.0F ||
       entity->cBoundingBox->bottom > m_window.getSize().y)
     {
       isCollision = true;
-      std::cout << "collision with window top/bottom edges" << std::endl;
+      //std::cout << "collision with window top/bottom edges" << std::endl;
       entity->cTransform->velocity.y *= -1.0F;
     }
 
@@ -216,29 +234,50 @@ void Game::sCollision()
   }
 }
 
+void Game::spawnBullet( const Vec2f& target )
+{
+  // Create bullet entity
+  std::shared_ptr<Entity> bullet = m_entityManager.addEntity("enemy");
+
+  // Calculate direction and velocity vector of the bullet
+  const float bulletSpeed = 5.0F;
+  Vec2f bulletVelocity = target - m_player->cTransform->pos;
+  bulletVelocity.normalize();
+  bulletVelocity.scale(bulletSpeed);
+  std::cout << "bulletVelocity x: " << bulletVelocity.x << " y: "<< bulletVelocity.y << std::endl;
+
+  // Fill bullet entity
+  bullet->cShape = std::make_shared<CShape>(4, 5, sf::Color::Red);
+  bullet->cBoundingBox = std::make_shared<CBoundingBox>();
+  Vec2f pos (m_player->cTransform->pos.x, m_player->cTransform->pos.y);
+  Vec2f velocity (bulletVelocity.x, bulletVelocity.y);
+  bullet->cTransform = std::make_shared<CTransform>(pos, velocity, 0.0F);
+}
+
+void Game::spawnEnemy()
+{
+  std::random_device randomDevice;
+  std::mt19937 mt(randomDevice());
+  std::uniform_real_distribution<double> speedDistribution(1.0, 4.0);
+  std::uniform_real_distribution<double> angleDistribution(0.0, 2*3.14);
+  Vec2f pos (300, 300);
+  Vec2f velocity = Vec2f::polarToDescartes(speedDistribution(mt), angleDistribution(mt));
+
+  std::shared_ptr<Entity> enemy = m_entityManager.addEntity("enemy");
+
+  enemy->cShape = std::make_shared<CShape>(3, 10, sf::Color::Blue);
+  enemy->cBoundingBox = std::make_shared<CBoundingBox>();
+  enemy->cTransform = std::make_shared<CTransform>(pos, velocity, 0.0F);
+}
+
 void Game::sEnemySpawner()
 {
   static uint64_t lastEnemySpawnedFrame = 0U;
   constexpr uint64_t enemySpawnFrequencyInFrames = 60*2;
 
-  std::random_device randomDevice;
-  std::mt19937 mt(randomDevice());
-  std::uniform_real_distribution<double> speedDistribution(1.0, 4.0);
-  std::uniform_real_distribution<double> angleDistribution(0.0, 2*3.14);
-
   if ((m_currentFrame - lastEnemySpawnedFrame) > enemySpawnFrequencyInFrames)
   {
-    std::shared_ptr<Entity> enemy = m_entityManager.addEntity("enemy");
-
-    std::shared_ptr<CShape> enemyShape = std::make_shared<CShape>(3, 10, sf::Color::Blue);
-    enemy->cShape = enemyShape;
-    Vec2f pos (300, 300);
-    Vec2f velocity = Vec2f::polarToDescartes(speedDistribution(mt), angleDistribution(mt));
-    std::shared_ptr<CBoundingBox> enemyBBox = std::make_shared<CBoundingBox>();
-    enemy->cBoundingBox = enemyBBox;
-    std::shared_ptr<CTransform> enemyTransform = std::make_shared<CTransform>(pos, velocity, 0.0F);
-    enemy->cTransform = enemyTransform;
-
+    //spawnEnemy();
     lastEnemySpawnedFrame = m_currentFrame;
   }
 }

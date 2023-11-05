@@ -69,10 +69,11 @@ float Vec2f::length() const
 
 void Vec2f::normalize()
 {
-  if (length() > 0)
+  float len = length();
+  if (len > 0)
   {
-    x /= length();
-    y /= length();
+    x /= len;
+    y /= len;
   }
 }
 

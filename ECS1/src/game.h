@@ -23,11 +23,13 @@ public:
 private:
   void init();
   void spawnPlayer();
+  void spawnEnemy();
+  void spawnBullet(const Vec2f& target);
 
   // Systems
   void sUserInput();
   void sRender();
-  void sTransform();
+  void sMovement();
   void sCollision();
   void sEnemySpawner();
 
