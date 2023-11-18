@@ -11,10 +11,13 @@ Game::Game()
 
 void Game::spawnPlayer()
 {
+  const float radius = 10.0F;
+
   m_player = m_entityManager.addEntity("player");
-  m_player->cShape = std::make_shared<CShape>(3, 10, sf::Color::Blue);
+  m_player->cShape = std::make_shared<CShape>(3, radius, sf::Color::Blue);
   m_player->cInput = std::make_shared<CInput>();
-  m_player->cBoundingBox = std::make_shared<CBoundingBox>();
+  m_player->cBoundingBox = std::make_shared<CBoundingBox>(radius);
+  m_player->cCollision = std::make_shared<CCollision>(radius);
 
   Vec2f pos (100, 100);
   Vec2f velocity (0, 0);
@@ -39,7 +42,7 @@ void Game::init()
   m_deltaTime = 0.017F;  // if real clock is used than in debug mode breakpoint sets infinite time and everything falls apart.
 
   // Set game state
-  m_gameState = GameState::GAME_RUNNING;
+  m_gameState = GameState::GAME_INIT;
 
   spawnPlayer();
 
@@ -61,19 +64,31 @@ void Game::run()
 {
   while(m_window.isOpen())
   {
-    m_entityManager.update();
-
-    if (!m_paused)
+    switch (m_gameState)
     {
-      sEnemySpawner();
-      sLifespan();
-      sMovement();
-      sCollision();
-    }
-    sUserInput();
-    sRender();
+      case GameState::GAME_INIT:
+        sUserInput();
+        break;
+      case GameState::GAME_RUNNING:
+        m_entityManager.update();
 
-    m_currentFrame++;
+        if (!m_paused)
+        {
+          sEnemySpawner();
+          sLifespan();
+          sMovement();
+          sCollision();
+        }
+        sUserInput();
+        sRender();
+
+        m_currentFrame++;
+        break;
+      case GameState::GAME_OVER:
+        break;
+      default:
+        break;
+    }
   }
 }
 
@@ -95,6 +110,13 @@ void Game::sUserInput()
       // Mouse button pressed event
       case sf::Event::MouseButtonPressed:
       {
+        // If any mouse button is pressed go to the next game state
+        if (m_gameState == GameState::GAME_INIT)
+        {
+          m_gameState = GameState::GAME_RUNNING;
+          std::cout << "Game has been started" << std::endl; 
+        }
+
         if (event.mouseButton.button == sf::Mouse::Button::Left)
         {
           std::cout << "Left mouse button was clicked at position: " << "x: " << event.mouseButton.x << "y: " << event.mouseButton.y << std::endl; // log message
@@ -206,8 +228,6 @@ void Game::sRender()
 
         m_window.draw(entity->cShape->circle);
       }
-      
-
       break;
     }
     case GameState::GAME_OVER:
@@ -231,7 +251,7 @@ void Game::sMovement()
       {
         entity->cTransform->pos.x += -playerSpeed;
       }
-      if (entity->cInput->right)
+      if (entity->cInput->right /*&& (entity->cBoundingBox->right > m_window.getSize().x )*/)
       {
         entity->cTransform->pos.x += playerSpeed;
       }
@@ -313,6 +333,33 @@ void Game::sCollision()
       }
     }
   }
+
+  // Check for collision of player with enemies
+  for (auto& enemy : m_entityManager.getEntities("enemy"))
+  {
+    Vec2f dist (m_player->cTransform->pos - enemy->cTransform->pos);
+    if (dist.length() < (enemy->cCollision->radius + m_player->cCollision->radius))
+    {
+      std::cout << "Collision between player and enemy" << std::endl;
+      std::cout << "Game over" << std::endl;
+      enemy->destroy();
+      m_player->destroy();
+      m_gameState = GameState::GAME_OVER;
+    }
+  }
+  for (auto& smallEnemy : m_entityManager.getEntities("smallEnemy"))
+  {
+    Vec2f dist (m_player->cTransform->pos - smallEnemy->cTransform->pos);
+    if (dist.length() < (smallEnemy->cCollision->radius + m_player->cCollision->radius))
+    {
+      std::cout << "Collision between player and small enemy" << std::endl;
+      std::cout << "Game over" << std::endl;
+      smallEnemy->destroy();
+      m_player->destroy();
+      m_gameState = GameState::GAME_OVER;
+    }
+  }
+
 }
 
 void Game::spawnBullet( const Vec2f& target )
@@ -331,7 +378,7 @@ void Game::spawnBullet( const Vec2f& target )
   const float bulletRadius = 5.0F;
   const int lifespan = 400;
   bullet->cShape = std::make_shared<CShape>(4, bulletRadius, sf::Color::Red);
-  bullet->cBoundingBox = std::make_shared<CBoundingBox>();
+  bullet->cBoundingBox = std::make_shared<CBoundingBox>(bulletRadius);
   bullet->cCollision = std::make_shared<CCollision>(bulletRadius);
   Vec2f pos (m_player->cTransform->pos.x, m_player->cTransform->pos.y);
   Vec2f velocity (bulletVelocity.x, bulletVelocity.y);
@@ -351,7 +398,7 @@ void Game::spawnSmallEnemies(int numOfEnemies, Vec2f spawnPosition)
     Vec2f smallEnemyVelocity = Vec2f::polarToDescartes(smallEnemySpeed, startAngle + i * angleDifference);
     std::shared_ptr<Entity> enemy = m_entityManager.addEntity("smallEnemy");
     enemy->cShape = std::make_shared<CShape>(5, smallEnemyRadius, sf::Color::Yellow);
-    enemy->cBoundingBox = std::make_shared<CBoundingBox>();
+    enemy->cBoundingBox = std::make_shared<CBoundingBox>(smallEnemyRadius);
     enemy->cCollision = std::make_shared<CCollision>(smallEnemyRadius);
     enemy->cTransform = std::make_shared<CTransform>(spawnPosition, smallEnemyVelocity, 0.0F);
     enemy->cLifespan = std::make_shared<CLifespan>(lifespan, lifespan);
@@ -375,7 +422,7 @@ void Game::spawnEnemy()
   std::shared_ptr<Entity> enemy = m_entityManager.addEntity("enemy");
 
   enemy->cShape = std::make_shared<CShape>(5, shapeRadius, sf::Color::Green);
-  enemy->cBoundingBox = std::make_shared<CBoundingBox>();
+  enemy->cBoundingBox = std::make_shared<CBoundingBox>(shapeRadius);
   enemy->cCollision = std::make_shared<CCollision>(shapeRadius);
   enemy->cTransform = std::make_shared<CTransform>(pos, velocity, 0.0F);
   // enemy->cTransform = std::make_shared<CTransform>(pos, Vec2f(0, 0), 0.0F);  // Uncomment to have stationary enemies

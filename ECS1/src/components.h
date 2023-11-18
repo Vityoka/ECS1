@@ -85,5 +85,6 @@ public:
   // Radius for circular bounding box
   float radius = 0.0F;
 
-  CBoundingBox() {};
+  CBoundingBox(float radius)
+    : radius(radius){};
 };
