@@ -15,6 +15,7 @@ public:
   std::shared_ptr<CInput> cInput = nullptr;
   std::shared_ptr<CShape> cShape = nullptr;
   std::shared_ptr<CScore> cScore = nullptr;
+  std::shared_ptr<CCollision> cCollision = nullptr;
   std::shared_ptr<CBoundingBox> cBoundingBox = nullptr;
   
   Entity(const std::string& tag, int id);

@@ -7,6 +7,12 @@
 #include "entity_manager.h"
 #include <memory>
 
+const float PI_F = 3.14159265358979F;
+
+struct PlayerConfig { int SR, CR, FR, FG, FB, OR, OG, OB, OT, V; float S; };
+struct EnemyConfig { int SR, CR, OR, OG, OB, OT, VMIN, VMAX, L, SI; float SMIN, SMAX; }; 
+struct BulletConfig { int SR, CR, FR, FG, FB, OR, OG, OB, OT, V, L; float S; };
+
 enum GameState : char{
   GAME_INIT = 0,
   GAME_RUNNING = 1,
@@ -24,6 +30,7 @@ private:
   void init();
   void spawnPlayer();
   void spawnEnemy();
+  void spawnSmallEnemies(int numOfEnemies, Vec2f spawnPosition);
   void spawnBullet(const Vec2f& target);
 
   // Systems
@@ -51,6 +58,9 @@ private:
   std::shared_ptr<Entity> m_player;
 
   GameState m_gameState;
+  PlayerConfig m_playerConfig;
+  BulletConfig m_bulletConfig;
+  EnemyConfig m_enemyConfig;
 
   bool m_paused = false;
 };

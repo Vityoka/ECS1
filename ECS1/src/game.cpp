@@ -2,6 +2,7 @@
 #include "vec2f.h"
 #include <iostream>
 #include <random>
+#include <fstream>
 
 Game::Game() 
 {
@@ -22,6 +23,11 @@ void Game::spawnPlayer()
 
 void Game::init()
 {
+
+  // TODO: read config file. BulletConfig, EnemyConfig, etc.
+  // std::ifstream fin (path);
+  // fin >> m_playerConfig.SR >> m_playerConfig.CR;
+
   // Create game window
   m_window.create(sf::VideoMode(800, 600), "ECS1");
   m_window.setFramerateLimit(60);
@@ -55,13 +61,16 @@ void Game::run()
 {
   while(m_window.isOpen())
   {
-    sUserInput();
-    sMovement();
-    sRender();
-    sCollision();
-    sEnemySpawner();
-    
     m_entityManager.update();
+
+    if (!m_paused)
+    {
+      sUserInput();
+      sEnemySpawner();
+      sMovement();
+      sCollision();
+    }
+    sRender();
 
     m_currentFrame++;
   }
@@ -190,11 +199,21 @@ void Game::sMovement()
         entity->cTransform->pos.y += -playerSpeed;
       }
     }
-    if (entity->getTag() == "enemy")
+    if (entity->getTag() == "enemy" ||
+        entity->getTag() == "smallEnemy" ||
+        entity->getTag() == "bullet")
     {
       entity->cTransform->pos += entity->cTransform->velocity;
     }
     entity->cShape->circle.setPosition(entity->cTransform->pos.x, entity->cTransform->pos.y);
+
+    // set basic rotation for the shapes
+    entity->cTransform->angle += 1.0F;
+    if (entity->cTransform->angle > 360.0F)
+    {
+      entity->cTransform->angle = 0.0F;
+    }
+    entity->cShape->circle.setRotation(entity->cTransform->angle);
   }
 }
 
@@ -232,12 +251,36 @@ void Game::sCollision()
     // TODO: Calculate penetration depth
     // TODO: Resolve collision
   }
+
+  for (auto& bullet : m_entityManager.getEntities("bullet"))
+  {
+    for (auto& enemy : m_entityManager.getEntities("enemy"))
+    {
+      Vec2f dist (bullet->cTransform->pos - enemy->cTransform->pos);
+      if (dist.length() < (enemy->cCollision->radius + bullet->cCollision->radius))
+      {
+        std::cout << "Collision between bullet and enemy" << std::endl;
+        enemy->destroy();
+        spawnSmallEnemies(enemy->cShape->circle.getPointCount(), enemy->cTransform->pos);
+      }
+    }
+    for (auto& smallEnemy : m_entityManager.getEntities("smallEnemy"))
+    {
+      Vec2f dist (bullet->cTransform->pos - smallEnemy->cTransform->pos);
+      if (dist.length() < (smallEnemy->cCollision->radius + bullet->cCollision->radius))
+      {
+        std::cout << "Collision between bullet and small enemy" << std::endl;
+        smallEnemy->destroy();
+      }
+    }
+  }
+
 }
 
 void Game::spawnBullet( const Vec2f& target )
 {
   // Create bullet entity
-  std::shared_ptr<Entity> bullet = m_entityManager.addEntity("enemy");
+  std::shared_ptr<Entity> bullet = m_entityManager.addEntity("bullet");
 
   // Calculate direction and velocity vector of the bullet
   const float bulletSpeed = 5.0F;
@@ -247,27 +290,53 @@ void Game::spawnBullet( const Vec2f& target )
   std::cout << "bulletVelocity x: " << bulletVelocity.x << " y: "<< bulletVelocity.y << std::endl;
 
   // Fill bullet entity
-  bullet->cShape = std::make_shared<CShape>(4, 5, sf::Color::Red);
+  const float bulletRadius = 5.0F;
+  bullet->cShape = std::make_shared<CShape>(4, bulletRadius, sf::Color::Red);
   bullet->cBoundingBox = std::make_shared<CBoundingBox>();
+  bullet->cCollision = std::make_shared<CCollision>(bulletRadius);
   Vec2f pos (m_player->cTransform->pos.x, m_player->cTransform->pos.y);
   Vec2f velocity (bulletVelocity.x, bulletVelocity.y);
   bullet->cTransform = std::make_shared<CTransform>(pos, velocity, 0.0F);
 }
 
+void Game::spawnSmallEnemies(int numOfEnemies, Vec2f spawnPosition)
+{
+  float smallEnemySpeed = 1.0F;
+  const float smallEnemyRadius = 5.0F;
+  float angleDifference = (2 * PI_F) / numOfEnemies;
+  float startAngle = 0.0F;  // TODO: could be randomized
+  for (int i = 0; i < numOfEnemies; i++)
+  {
+    Vec2f smallEnemyVelocity = Vec2f::polarToDescartes(smallEnemySpeed, startAngle + i * angleDifference);
+    std::shared_ptr<Entity> enemy = m_entityManager.addEntity("smallEnemy");
+    enemy->cShape = std::make_shared<CShape>(5, smallEnemyRadius, sf::Color::Yellow);
+    enemy->cBoundingBox = std::make_shared<CBoundingBox>();
+    enemy->cCollision = std::make_shared<CCollision>(smallEnemyRadius);
+    enemy->cTransform = std::make_shared<CTransform>(spawnPosition, smallEnemyVelocity, 0.0F);
+  }
+}
+
 void Game::spawnEnemy()
 {
+  float shapeRadius = 10.0F;
+
   std::random_device randomDevice;
   std::mt19937 mt(randomDevice());
   std::uniform_real_distribution<double> speedDistribution(1.0, 4.0);
-  std::uniform_real_distribution<double> angleDistribution(0.0, 2*3.14);
-  Vec2f pos (300, 300);
+  std::uniform_real_distribution<double> angleDistribution(0.0, 2 * PI_F);
+  std::uniform_real_distribution<double> positionXDistribution(0.0 + shapeRadius, m_window.getSize().x - shapeRadius);
+  std::uniform_real_distribution<double> positionYDistribution(0.0 + shapeRadius, m_window.getSize().y - shapeRadius);
+
+  Vec2f pos (positionXDistribution(mt), positionYDistribution(mt));
   Vec2f velocity = Vec2f::polarToDescartes(speedDistribution(mt), angleDistribution(mt));
 
   std::shared_ptr<Entity> enemy = m_entityManager.addEntity("enemy");
 
-  enemy->cShape = std::make_shared<CShape>(3, 10, sf::Color::Blue);
+  enemy->cShape = std::make_shared<CShape>(5, shapeRadius, sf::Color::Green);
   enemy->cBoundingBox = std::make_shared<CBoundingBox>();
-  enemy->cTransform = std::make_shared<CTransform>(pos, velocity, 0.0F);
+  enemy->cCollision = std::make_shared<CCollision>(shapeRadius);
+  //enemy->cTransform = std::make_shared<CTransform>(pos, velocity, 0.0F);
+  enemy->cTransform = std::make_shared<CTransform>(pos, Vec2f(0, 0), 0.0F);
 }
 
 void Game::sEnemySpawner()
@@ -277,7 +346,7 @@ void Game::sEnemySpawner()
 
   if ((m_currentFrame - lastEnemySpawnedFrame) > enemySpawnFrequencyInFrames)
   {
-    //spawnEnemy();
+    spawnEnemy();
     lastEnemySpawnedFrame = m_currentFrame;
   }
 }
