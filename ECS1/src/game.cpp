@@ -19,7 +19,7 @@ void Game::spawnPlayer()
   m_player->cBoundingBox = std::make_shared<CBoundingBox>(radius);
   m_player->cCollision = std::make_shared<CCollision>(radius);
 
-  Vec2f pos (100, 100);
+  Vec2f pos (m_window.getSize().x / 2.0F, m_window.getSize().y / 2.0F);
   Vec2f velocity (0, 0);
   m_player->cTransform = std::make_shared<CTransform>(pos, velocity, 0.0F);
 }
@@ -240,6 +240,15 @@ void Game::sRender()
   m_window.display();
 }
 
+void updateBoundingBoxes(std::shared_ptr<Entity>& entity)
+{
+  // Calculate new bounding boxes for the entities
+  entity->cBoundingBox->left = entity->cShape->circle.getGlobalBounds().left;
+  entity->cBoundingBox->right = entity->cShape->circle.getGlobalBounds().left + entity->cShape->circle.getGlobalBounds().width;
+  entity->cBoundingBox->top = entity->cShape->circle.getGlobalBounds().top ;
+  entity->cBoundingBox->bottom = entity->cShape->circle.getGlobalBounds().top + entity->cShape->circle.getGlobalBounds().height;
+}
+
 void Game::sMovement()
 {
   for (auto& entity : m_entityManager.getEntities())
@@ -249,19 +258,35 @@ void Game::sMovement()
       const float playerSpeed = 5.0F;
       if (entity->cInput->left)
       {
-        entity->cTransform->pos.x += -playerSpeed;
+        float newCoord = entity->cTransform->pos.x - playerSpeed;
+        if (newCoord > (0.0F + m_player->cBoundingBox->radius))
+        {
+          entity->cTransform->pos.x = newCoord;
+        }
       }
-      if (entity->cInput->right /*&& (entity->cBoundingBox->right > m_window.getSize().x )*/)
+      if (entity->cInput->right)
       {
-        entity->cTransform->pos.x += playerSpeed;
+        float newCoord = entity->cTransform->pos.x + playerSpeed;
+        if (newCoord < (m_window.getSize().x - m_player->cBoundingBox->radius))
+        {
+          entity->cTransform->pos.x = newCoord;
+        }
       }
       if (entity->cInput->down)
       {
-        entity->cTransform->pos.y += playerSpeed;
+        float newCoord = entity->cTransform->pos.y + playerSpeed;
+        if (newCoord < (m_window.getSize().y -  + m_player->cBoundingBox->radius))
+        {
+          entity->cTransform->pos.y = newCoord;
+        }
       }
       if (entity->cInput->up)
       {
-        entity->cTransform->pos.y += -playerSpeed;
+        float newCoord = entity->cTransform->pos.y - playerSpeed;
+        if (newCoord > (0.0F + m_player->cBoundingBox->radius))
+        {
+          entity->cTransform->pos.y = newCoord;
+        }
       }
     }
     if (entity->getTag() == "enemy" ||
@@ -271,6 +296,8 @@ void Game::sMovement()
       entity->cTransform->pos += entity->cTransform->velocity;
     }
     entity->cShape->circle.setPosition(entity->cTransform->pos.x, entity->cTransform->pos.y);
+
+    updateBoundingBoxes(entity);
   }
 }
 
@@ -280,12 +307,6 @@ void Game::sCollision()
   for (auto& entity : m_entityManager.getEntities())
   {
     bool isCollision = false;
-    
-    // Calculate bounding boxes for the entities
-    entity->cBoundingBox->left = entity->cShape->circle.getGlobalBounds().left;
-    entity->cBoundingBox->right = entity->cShape->circle.getGlobalBounds().left + entity->cShape->circle.getGlobalBounds().width;
-    entity->cBoundingBox->top = entity->cShape->circle.getGlobalBounds().top ;
-    entity->cBoundingBox->bottom = entity->cShape->circle.getGlobalBounds().top + entity->cShape->circle.getGlobalBounds().height;
 
     // Detect and resolve collision with window edges
     if (entity->cBoundingBox->left < 0.0F ||

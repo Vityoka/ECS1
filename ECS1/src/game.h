@@ -41,6 +41,8 @@ private:
   void sCollision();
   void sEnemySpawner();
 
+  void updateBoundingBox(std::shared_ptr<Entity>& entity);
+
   uint64_t m_currentFrame;
 
   sf::RenderWindow m_window;
