@@ -65,12 +65,12 @@ void Game::run()
 
     if (!m_paused)
     {
-      sUserInput();
       sEnemySpawner();
       sLifespan();
       sMovement();
       sCollision();
     }
+    sUserInput();
     sRender();
 
     m_currentFrame++;
@@ -125,6 +125,8 @@ void Game::sUserInput()
           m_gameState = GameState::GAME_RUNNING;
           std::cout << "Game has been started" << std::endl; 
         }
+
+        if (event.key.code == sf::Keyboard::Key::P) m_paused = !m_paused;
 
         //std::cout << event.key.code << std::endl; // log message
         if (m_player->cInput) // Check whether the entity has the cInput component available
@@ -193,8 +195,19 @@ void Game::sRender()
       // Draw entities
       for (auto& entity : m_entityManager.getEntities())
       {
+        // Set basic rotation for the shapes
+        // It is put in the rendering system because in case of a pause, we want rotating shapes
+        entity->cTransform->angle += 1.0F;
+        if (entity->cTransform->angle > 360.0F)
+        {
+          entity->cTransform->angle = 0.0F;
+        }
+        entity->cShape->circle.setRotation(entity->cTransform->angle);
+
         m_window.draw(entity->cShape->circle);
       }
+      
+
       break;
     }
     case GameState::GAME_OVER:
@@ -238,14 +251,6 @@ void Game::sMovement()
       entity->cTransform->pos += entity->cTransform->velocity;
     }
     entity->cShape->circle.setPosition(entity->cTransform->pos.x, entity->cTransform->pos.y);
-
-    // set basic rotation for the shapes
-    entity->cTransform->angle += 1.0F;
-    if (entity->cTransform->angle > 360.0F)
-    {
-      entity->cTransform->angle = 0.0F;
-    }
-    entity->cShape->circle.setRotation(entity->cTransform->angle);
   }
 }
 
