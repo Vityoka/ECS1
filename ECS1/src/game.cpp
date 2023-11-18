@@ -102,6 +102,11 @@ void Game::sUserInput()
         if (event.mouseButton.button == sf::Mouse::Button::Right)
         {
           std::cout << "Right mouse button was clicked at position: " << "x: " << event.mouseButton.x << "y: " << event.mouseButton.y << std::endl; // log message
+          // DEBUG
+          //auto entities = m_entityManager.getEntities();
+          //static int i = 0;
+          //entities[i]->destroy();
+          //i++;
         }
         break;
       }

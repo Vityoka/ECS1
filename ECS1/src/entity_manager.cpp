@@ -70,7 +70,7 @@ void EntityManager::update()
   m_entities.erase(lastAliveElement, m_entities.end());
 
   // TODO: remove from the map too. TODO: Check if it is OK
-  for (auto mapElementPair : m_entityMap)
+  for (auto& mapElementPair : m_entityMap)
   {
     auto lastAliveElement = std::remove_if(mapElementPair.second.begin(), mapElementPair.second.end(), IsNotAlive());
     mapElementPair.second.erase(lastAliveElement, mapElementPair.second.end());
