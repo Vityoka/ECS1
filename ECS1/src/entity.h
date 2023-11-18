@@ -17,6 +17,7 @@ public:
   std::shared_ptr<CScore> cScore = nullptr;
   std::shared_ptr<CCollision> cCollision = nullptr;
   std::shared_ptr<CBoundingBox> cBoundingBox = nullptr;
+  std::shared_ptr<CLifespan> cLifespan = nullptr;
   
   Entity(const std::string& tag, int id);
   const std::string& getTag() const;

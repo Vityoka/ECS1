@@ -67,6 +67,7 @@ void Game::run()
     {
       sUserInput();
       sEnemySpawner();
+      sLifespan();
       sMovement();
       sCollision();
     }
@@ -132,6 +133,10 @@ void Game::sUserInput()
           if (event.key.code == sf::Keyboard::Key::Up) m_player->cInput->up = true;
           if (event.key.code == sf::Keyboard::Key::Left) m_player->cInput->left = true;
           if (event.key.code == sf::Keyboard::Key::Right) m_player->cInput->right = true;
+          if (event.key.code == sf::Keyboard::Key::S) m_player->cInput->down = true;
+          if (event.key.code == sf::Keyboard::Key::W) m_player->cInput->up = true;
+          if (event.key.code == sf::Keyboard::Key::A) m_player->cInput->left = true;
+          if (event.key.code == sf::Keyboard::Key::D) m_player->cInput->right = true;
         }
 
         break;
@@ -145,9 +150,31 @@ void Game::sUserInput()
           if (event.key.code == sf::Keyboard::Key::Up) m_player->cInput->up = false;
           if (event.key.code == sf::Keyboard::Key::Left) m_player->cInput->left = false;
           if (event.key.code == sf::Keyboard::Key::Right) m_player->cInput->right = false;
+          if (event.key.code == sf::Keyboard::Key::S) m_player->cInput->down = false;
+          if (event.key.code == sf::Keyboard::Key::W) m_player->cInput->up = false;
+          if (event.key.code == sf::Keyboard::Key::A) m_player->cInput->left = false;
+          if (event.key.code == sf::Keyboard::Key::D) m_player->cInput->right = false;
         }
         break;
       }
+    }
+  }
+}
+
+void Game::sLifespan()
+{
+  for (auto& entity : m_entityManager.getEntities())
+  {
+    if (entity->cLifespan)
+    {
+      entity->cLifespan->remainingLifespan--;
+      if (entity->cLifespan->remainingLifespan <= 0)
+      {
+        entity->destroy();
+      }
+      sf::Color color = entity->cShape->circle.getFillColor();
+      color.a = 255 * (entity->cLifespan->remainingLifespan / static_cast<float>(entity->cLifespan->totalLifespan));
+      entity->cShape->circle.setFillColor(color);
     }
   }
 }
@@ -266,6 +293,7 @@ void Game::sCollision()
       {
         std::cout << "Collision between bullet and enemy" << std::endl;
         enemy->destroy();
+        bullet->destroy();
         spawnSmallEnemies(enemy->cShape->circle.getPointCount(), enemy->cTransform->pos);
       }
     }
@@ -276,10 +304,10 @@ void Game::sCollision()
       {
         std::cout << "Collision between bullet and small enemy" << std::endl;
         smallEnemy->destroy();
+        bullet->destroy();
       }
     }
   }
-
 }
 
 void Game::spawnBullet( const Vec2f& target )
@@ -296,16 +324,19 @@ void Game::spawnBullet( const Vec2f& target )
 
   // Fill bullet entity
   const float bulletRadius = 5.0F;
+  const int lifespan = 400;
   bullet->cShape = std::make_shared<CShape>(4, bulletRadius, sf::Color::Red);
   bullet->cBoundingBox = std::make_shared<CBoundingBox>();
   bullet->cCollision = std::make_shared<CCollision>(bulletRadius);
   Vec2f pos (m_player->cTransform->pos.x, m_player->cTransform->pos.y);
   Vec2f velocity (bulletVelocity.x, bulletVelocity.y);
   bullet->cTransform = std::make_shared<CTransform>(pos, velocity, 0.0F);
+  bullet->cLifespan = std::make_shared<CLifespan>(lifespan, lifespan);
 }
 
 void Game::spawnSmallEnemies(int numOfEnemies, Vec2f spawnPosition)
 {
+  const int lifespan = 200;
   float smallEnemySpeed = 1.0F;
   const float smallEnemyRadius = 5.0F;
   float angleDifference = (2 * PI_F) / numOfEnemies;
@@ -318,6 +349,7 @@ void Game::spawnSmallEnemies(int numOfEnemies, Vec2f spawnPosition)
     enemy->cBoundingBox = std::make_shared<CBoundingBox>();
     enemy->cCollision = std::make_shared<CCollision>(smallEnemyRadius);
     enemy->cTransform = std::make_shared<CTransform>(spawnPosition, smallEnemyVelocity, 0.0F);
+    enemy->cLifespan = std::make_shared<CLifespan>(lifespan, lifespan);
   }
 }
 
@@ -340,8 +372,8 @@ void Game::spawnEnemy()
   enemy->cShape = std::make_shared<CShape>(5, shapeRadius, sf::Color::Green);
   enemy->cBoundingBox = std::make_shared<CBoundingBox>();
   enemy->cCollision = std::make_shared<CCollision>(shapeRadius);
-  //enemy->cTransform = std::make_shared<CTransform>(pos, velocity, 0.0F);
-  enemy->cTransform = std::make_shared<CTransform>(pos, Vec2f(0, 0), 0.0F);
+  enemy->cTransform = std::make_shared<CTransform>(pos, velocity, 0.0F);
+  // enemy->cTransform = std::make_shared<CTransform>(pos, Vec2f(0, 0), 0.0F);  // Uncomment to have stationary enemies
 }
 
 void Game::sEnemySpawner()

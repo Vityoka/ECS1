@@ -37,6 +37,7 @@ private:
   void sUserInput();
   void sRender();
   void sMovement();
+  void sLifespan();
   void sCollision();
   void sEnemySpawner();
 
