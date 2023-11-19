@@ -415,8 +415,8 @@ void Game::spawnBullet( const Vec2f& target )
 void Game::spawnSmallEnemies(int numOfEnemies, Vec2f spawnPosition)
 {
   const int lifespan = 200;
-  float smallEnemySpeed = 1.0F;
-  const float smallEnemyRadius = 5.0F;
+  float smallEnemySpeed = g_config.enemyConfig.maxSpeed;
+  const float smallEnemyRadius = g_config.enemyConfig.shapeRadius / 2.0F;
   float angleDifference = (2 * PI_F) / numOfEnemies;
   float startAngle = 0.0F;  // TODO: could be randomized
   for (int i = 0; i < numOfEnemies; i++)
@@ -449,8 +449,6 @@ void Game::spawnEnemy()
   Vec2f pos (positionXDistribution(mt), positionYDistribution(mt));
   Vec2f velocity = Vec2f::polarToDescartes(speedDistribution(mt), angleDistribution(mt));
   const int numOfVertices = verticesDistribution(mt);
-
-  std::cout << numOfVertices << std::endl;
 
   // Create enemy entity
   std::shared_ptr<Entity> enemy = m_entityManager.addEntity("enemy");
