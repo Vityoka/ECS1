@@ -15,8 +15,8 @@ void Game::init()
   g_config.loadConfig();
 
   // Create game window
-  m_window.create(sf::VideoMode(800, 600), "ECS1");
-  m_window.setFramerateLimit(60);
+  m_window.create(sf::VideoMode(g_config.windowConfig.width, g_config.windowConfig.height), "ECS1");
+  m_window.setFramerateLimit(g_config.windowConfig.frameRateLimit);
   m_currentFrame = 0U;
 
   // Time control. Currently overriden with constant to support debugging.
@@ -414,9 +414,11 @@ void Game::spawnBullet( const Vec2f& target )
 
 void Game::spawnSmallEnemies(int numOfEnemies, Vec2f spawnPosition)
 {
-  const int lifespan = 200;
+  // Get data from config
+  const int lifespan = g_config.enemyConfig.smallLifespan;
   float smallEnemySpeed = g_config.enemyConfig.maxSpeed;
   const float smallEnemyRadius = g_config.enemyConfig.shapeRadius / 2.0F;
+  
   float angleDifference = (2 * PI_F) / numOfEnemies;
   float startAngle = 0.0F;  // TODO: could be randomized
   for (int i = 0; i < numOfEnemies; i++)
@@ -464,7 +466,7 @@ void Game::spawnEnemy()
 void Game::sEnemySpawner()
 {
   static uint64_t lastEnemySpawnedFrame = 0U;
-  constexpr uint64_t enemySpawnFrequencyInFrames = 60*2;
+  const uint64_t enemySpawnFrequencyInFrames = g_config.enemyConfig.spawnInterval;
 
   if ((m_currentFrame - lastEnemySpawnedFrame) > enemySpawnFrequencyInFrames)
   {

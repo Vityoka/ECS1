@@ -2,6 +2,13 @@
 
 #include <stdint.h>
 
+struct WindowConfig
+{
+  int   width;
+  int   height;
+  int   frameRateLimit;
+};
+
 struct PlayerConfig
 {
   float   shapeRadius;
@@ -32,6 +39,8 @@ struct EnemyConfig
   float   outlineThickness;
   int     minNumOfVertices;
   int     maxNumOfVertices;
+  int     smallLifespan;
+  int     spawnInterval;
 };
 
 struct BulletConfig
@@ -56,8 +65,9 @@ public:
   PlayerConfig playerConfig;
   EnemyConfig enemyConfig;
   BulletConfig bulletConfig;
+  WindowConfig windowConfig;
 
-  const int numOfConfigVariables = 36;
+  const int numOfConfigVariables = 41;
 
   void loadConfig();
 };

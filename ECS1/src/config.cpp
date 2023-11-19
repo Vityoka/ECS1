@@ -36,44 +36,50 @@ void Config::loadConfig()
 
   if (configValues.size() == numOfConfigVariables)
   {
-    playerConfig.shapeRadius       = std::stof(configValues[0]);
-    playerConfig.collisionRadius   = std::stof(configValues[1]);
-    playerConfig.speed             = std::stof(configValues[2]);
-    playerConfig.fillColorRed      = std::stoi(configValues[3]);
-    playerConfig.fillColorGreen    = std::stoi(configValues[4]);
-    playerConfig.fillColorBlue     = std::stoi(configValues[5]);
-    playerConfig.outlineColorRed   = std::stoi(configValues[6]);
-    playerConfig.outlineColorGreen = std::stoi(configValues[7]);
-    playerConfig.outlineColorBlue  = std::stoi(configValues[8]);
-    playerConfig.outlineThickness  = std::stof(configValues[9]);
-    playerConfig.numOfVertices     = std::stoi(configValues[10]);
+    windowConfig.width             = std::stoi(configValues[0]);
+    windowConfig.height            = std::stoi(configValues[1]);
+    windowConfig.frameRateLimit    = std::stoi(configValues[2]);
 
-    enemyConfig.shapeRadius        = std::stof(configValues[11]);
-    enemyConfig.collisionRadius    = std::stof(configValues[12]);
-    enemyConfig.minSpeed           = std::stof(configValues[13]);
-    enemyConfig.maxSpeed           = std::stof(configValues[14]);
-    enemyConfig.fillColorRed       = std::stoi(configValues[15]);
-    enemyConfig.fillColorGreen     = std::stoi(configValues[16]);
-    enemyConfig.fillColorBlue      = std::stoi(configValues[17]);
-    enemyConfig.outlineColorRed    = std::stoi(configValues[18]);
-    enemyConfig.outlineColorGreen  = std::stoi(configValues[19]);
-    enemyConfig.outlineColorBlue   = std::stoi(configValues[20]);
-    enemyConfig.outlineThickness   = std::stof(configValues[21]);
-    enemyConfig.minNumOfVertices   = std::stoi(configValues[22]);
-    enemyConfig.maxNumOfVertices   = std::stoi(configValues[23]);
+    playerConfig.shapeRadius       = std::stof(configValues[3]);
+    playerConfig.collisionRadius   = std::stof(configValues[4]);
+    playerConfig.speed             = std::stof(configValues[5]);
+    playerConfig.fillColorRed      = std::stoi(configValues[6]);
+    playerConfig.fillColorGreen    = std::stoi(configValues[7]);
+    playerConfig.fillColorBlue     = std::stoi(configValues[8]);
+    playerConfig.outlineColorRed   = std::stoi(configValues[9]);
+    playerConfig.outlineColorGreen = std::stoi(configValues[10]);
+    playerConfig.outlineColorBlue  = std::stoi(configValues[11]);
+    playerConfig.outlineThickness  = std::stof(configValues[12]);
+    playerConfig.numOfVertices     = std::stoi(configValues[13]);
 
-    bulletConfig.shapeRadius       = std::stof(configValues[24]);
-    bulletConfig.collisionRadius   = std::stof(configValues[25]);
-    bulletConfig.speed             = std::stof(configValues[26]);
-    bulletConfig.fillColorRed      = std::stoi(configValues[27]);
-    bulletConfig.fillColorGreen    = std::stoi(configValues[28]);
-    bulletConfig.fillColorBlue     = std::stoi(configValues[29]);
-    bulletConfig.outlineColorRed   = std::stoi(configValues[30]);
-    bulletConfig.outlineColorGreen = std::stoi(configValues[31]);
-    bulletConfig.outlineColorBlue  = std::stoi(configValues[32]);
-    bulletConfig.outlineThickness  = std::stof(configValues[33]);
-    bulletConfig.numOfVertices     = std::stoi(configValues[34]);
-    bulletConfig.lifespan          = std::stoi(configValues[35]);
+    enemyConfig.shapeRadius        = std::stof(configValues[14]);
+    enemyConfig.collisionRadius    = std::stof(configValues[15]);
+    enemyConfig.minSpeed           = std::stof(configValues[16]);
+    enemyConfig.maxSpeed           = std::stof(configValues[17]);
+    enemyConfig.fillColorRed       = std::stoi(configValues[18]);
+    enemyConfig.fillColorGreen     = std::stoi(configValues[19]);
+    enemyConfig.fillColorBlue      = std::stoi(configValues[20]);
+    enemyConfig.outlineColorRed    = std::stoi(configValues[21]);
+    enemyConfig.outlineColorGreen  = std::stoi(configValues[22]);
+    enemyConfig.outlineColorBlue   = std::stoi(configValues[23]);
+    enemyConfig.outlineThickness   = std::stof(configValues[24]);
+    enemyConfig.minNumOfVertices   = std::stoi(configValues[25]);
+    enemyConfig.maxNumOfVertices   = std::stoi(configValues[26]);
+    enemyConfig.smallLifespan      = std::stoi(configValues[27]);
+    enemyConfig.spawnInterval      = std::stoi(configValues[28]);
+
+    bulletConfig.shapeRadius       = std::stof(configValues[29]);
+    bulletConfig.collisionRadius   = std::stof(configValues[30]);
+    bulletConfig.speed             = std::stof(configValues[31]);
+    bulletConfig.fillColorRed      = std::stoi(configValues[32]);
+    bulletConfig.fillColorGreen    = std::stoi(configValues[33]);
+    bulletConfig.fillColorBlue     = std::stoi(configValues[34]);
+    bulletConfig.outlineColorRed   = std::stoi(configValues[35]);
+    bulletConfig.outlineColorGreen = std::stoi(configValues[36]);
+    bulletConfig.outlineColorBlue  = std::stoi(configValues[37]);
+    bulletConfig.outlineThickness  = std::stof(configValues[38]);
+    bulletConfig.numOfVertices     = std::stoi(configValues[39]);
+    bulletConfig.lifespan          = std::stoi(configValues[40]);
 
     std::cout << "Configuration parameters loaded successfully." << std::endl;
 
