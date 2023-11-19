@@ -99,17 +99,13 @@ void Game::sUserInput()
 
         if (event.mouseButton.button == sf::Mouse::Button::Left)
         {
-          std::cout << "Left mouse button was clicked at position: " << "x: " << event.mouseButton.x << "y: " << event.mouseButton.y << std::endl; // log message
+          //std::cout << "Left mouse button was clicked at position: " << "x: " << event.mouseButton.x << "y: " << event.mouseButton.y << std::endl; // log message
           spawnBullet( Vec2f(event.mouseButton.x, event.mouseButton.y) );
         }
         if (event.mouseButton.button == sf::Mouse::Button::Right)
         {
-          std::cout << "Right mouse button was clicked at position: " << "x: " << event.mouseButton.x << "y: " << event.mouseButton.y << std::endl; // log message
-          // DEBUG
-          //auto entities = m_entityManager.getEntities();
-          //static int i = 0;
-          //entities[i]->destroy();
-          //i++;
+          //std::cout << "Right mouse button was clicked at position: " << "x: " << event.mouseButton.x << "y: " << event.mouseButton.y << std::endl; // log message
+          useSpecialWeapon();
         }
         break;
       }
@@ -162,6 +158,28 @@ void Game::sUserInput()
         break;
       }
     }
+  }
+}
+
+void Game::useSpecialWeapon()
+{
+  const int cooldown = 500;
+  static uint64_t lastFrameUsed = 0U;
+  if ((m_currentFrame - lastFrameUsed) > cooldown)
+  {
+    for (auto& enemy : m_entityManager.getEntities("enemy"))
+    {
+      float originalSpeed = enemy->cTransform->velocity.length();
+      enemy->cTransform->velocity.x = 0;
+      enemy->cTransform->velocity.y = 1;
+      enemy->cTransform->velocity.scale(originalSpeed / 2.0F);
+    }
+    std::cout << "Special weapon activated." << std::endl;
+    lastFrameUsed = m_currentFrame;
+  }
+  else
+  {
+    std::cout << "Special weapon is still in cooldown." << std::endl;
   }
 }
 
@@ -418,7 +436,7 @@ void Game::spawnSmallEnemies(int numOfEnemies, Vec2f spawnPosition)
   const int lifespan = g_config.enemyConfig.smallLifespan;
   float smallEnemySpeed = g_config.enemyConfig.maxSpeed;
   const float smallEnemyRadius = g_config.enemyConfig.shapeRadius / 2.0F;
-  
+
   float angleDifference = (2 * PI_F) / numOfEnemies;
   float startAngle = 0.0F;  // TODO: could be randomized
   for (int i = 0; i < numOfEnemies; i++)

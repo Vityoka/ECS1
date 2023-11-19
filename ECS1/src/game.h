@@ -38,6 +38,7 @@ private:
   void sCollision();
   void sEnemySpawner();
 
+  void useSpecialWeapon();
   void updateBoundingBox(std::shared_ptr<Entity>& entity);
 
   uint64_t m_currentFrame;
