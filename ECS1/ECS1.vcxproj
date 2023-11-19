@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\config.cpp" />
     <ClCompile Include="src\entity.cpp" />
     <ClCompile Include="src\entity_manager.cpp" />
     <ClCompile Include="src\game.cpp" />
@@ -27,6 +28,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\components.h" />
+    <ClInclude Include="src\config.h" />
     <ClInclude Include="src\entity.h" />
     <ClInclude Include="src\entity_manager.h" />
     <ClInclude Include="src\game.h" />

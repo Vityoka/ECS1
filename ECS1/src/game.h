@@ -6,12 +6,9 @@
 #include <SFML/Audio.hpp>
 #include "entity_manager.h"
 #include <memory>
+#include "config.h"
 
 const float PI_F = 3.14159265358979F;
-
-struct PlayerConfig { int SR, CR, FR, FG, FB, OR, OG, OB, OT, V; float S; };
-struct EnemyConfig { int SR, CR, OR, OG, OB, OT, VMIN, VMAX, L, SI; float SMIN, SMAX; }; 
-struct BulletConfig { int SR, CR, FR, FG, FB, OR, OG, OB, OT, V, L; float S; };
 
 enum GameState : char{
   GAME_INIT = 0,
@@ -61,9 +58,6 @@ private:
   std::shared_ptr<Entity> m_player;
 
   GameState m_gameState;
-  PlayerConfig m_playerConfig;
-  BulletConfig m_bulletConfig;
-  EnemyConfig m_enemyConfig;
 
   bool m_paused = false;
 };

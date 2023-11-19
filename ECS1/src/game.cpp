@@ -9,27 +9,10 @@ Game::Game()
   init();
 }
 
-void Game::spawnPlayer()
-{
-  const float radius = 10.0F;
-
-  m_player = m_entityManager.addEntity("player");
-  m_player->cShape = std::make_shared<CShape>(3, radius, sf::Color::Blue);
-  m_player->cInput = std::make_shared<CInput>();
-  m_player->cBoundingBox = std::make_shared<CBoundingBox>(radius);
-  m_player->cCollision = std::make_shared<CCollision>(radius);
-
-  Vec2f pos (m_window.getSize().x / 2.0F, m_window.getSize().y / 2.0F);
-  Vec2f velocity (0, 0);
-  m_player->cTransform = std::make_shared<CTransform>(pos, velocity, 0.0F);
-}
-
 void Game::init()
 {
-
-  // TODO: read config file. BulletConfig, EnemyConfig, etc.
-  // std::ifstream fin (path);
-  // fin >> m_playerConfig.SR >> m_playerConfig.CR;
+  // Load configuration from config.ini
+  g_config.loadConfig();
 
   // Create game window
   m_window.create(sf::VideoMode(800, 600), "ECS1");
@@ -55,9 +38,6 @@ void Game::init()
   //{
   //  //m_music.play();
   //}
-
-  //Create entities
-
 }
 
 void Game::run()
@@ -383,22 +363,47 @@ void Game::sCollision()
 
 }
 
+void Game::spawnPlayer()
+{
+  // Get data from config
+  const float radius = g_config.playerConfig.shapeRadius;
+  sf::Color fillColor = {g_config.playerConfig.fillColorRed, g_config.playerConfig.fillColorGreen, g_config.playerConfig.fillColorBlue};
+  sf::Color outlineColor = {g_config.playerConfig.outlineColorRed, g_config.playerConfig.outlineColorGreen, g_config.playerConfig.outlineColorBlue};
+
+  // Create player entity
+  m_player = m_entityManager.addEntity("player");
+
+  // Fill player entity
+  m_player->cShape = std::make_shared<CShape>(g_config.playerConfig.numOfVertices, radius, fillColor, outlineColor);
+  m_player->cInput = std::make_shared<CInput>();
+  m_player->cBoundingBox = std::make_shared<CBoundingBox>(radius);
+  m_player->cCollision = std::make_shared<CCollision>(radius);
+
+  Vec2f pos (m_window.getSize().x / 2.0F, m_window.getSize().y / 2.0F);
+  Vec2f velocity (0, 0);
+  m_player->cTransform = std::make_shared<CTransform>(pos, velocity, 0.0F);
+}
+
 void Game::spawnBullet( const Vec2f& target )
 {
+  // Get data from config
+  const float bulletSpeed = g_config.bulletConfig.speed;
+  const float bulletRadius = g_config.bulletConfig.shapeRadius;
+  const int lifespan = g_config.bulletConfig.lifespan;
+  sf::Color fillColor = {g_config.bulletConfig.fillColorRed, g_config.bulletConfig.fillColorGreen, g_config.bulletConfig.fillColorBlue};
+  sf::Color outlineColor = {g_config.bulletConfig.outlineColorRed, g_config.bulletConfig.outlineColorGreen, g_config.bulletConfig.outlineColorBlue};
+
   // Create bullet entity
   std::shared_ptr<Entity> bullet = m_entityManager.addEntity("bullet");
 
   // Calculate direction and velocity vector of the bullet
-  const float bulletSpeed = 5.0F;
   Vec2f bulletVelocity = target - m_player->cTransform->pos;
   bulletVelocity.normalize();
   bulletVelocity.scale(bulletSpeed);
   std::cout << "bulletVelocity x: " << bulletVelocity.x << " y: "<< bulletVelocity.y << std::endl;
 
   // Fill bullet entity
-  const float bulletRadius = 5.0F;
-  const int lifespan = 400;
-  bullet->cShape = std::make_shared<CShape>(4, bulletRadius, sf::Color::Red);
+  bullet->cShape = std::make_shared<CShape>(4, bulletRadius, fillColor, outlineColor);
   bullet->cBoundingBox = std::make_shared<CBoundingBox>(bulletRadius);
   bullet->cCollision = std::make_shared<CCollision>(bulletRadius);
   Vec2f pos (m_player->cTransform->pos.x, m_player->cTransform->pos.y);
@@ -418,7 +423,7 @@ void Game::spawnSmallEnemies(int numOfEnemies, Vec2f spawnPosition)
   {
     Vec2f smallEnemyVelocity = Vec2f::polarToDescartes(smallEnemySpeed, startAngle + i * angleDifference);
     std::shared_ptr<Entity> enemy = m_entityManager.addEntity("smallEnemy");
-    enemy->cShape = std::make_shared<CShape>(5, smallEnemyRadius, sf::Color::Yellow);
+    enemy->cShape = std::make_shared<CShape>(numOfEnemies, smallEnemyRadius, sf::Color::Yellow);
     enemy->cBoundingBox = std::make_shared<CBoundingBox>(smallEnemyRadius);
     enemy->cCollision = std::make_shared<CCollision>(smallEnemyRadius);
     enemy->cTransform = std::make_shared<CTransform>(spawnPosition, smallEnemyVelocity, 0.0F);
@@ -428,21 +433,30 @@ void Game::spawnSmallEnemies(int numOfEnemies, Vec2f spawnPosition)
 
 void Game::spawnEnemy()
 {
-  float shapeRadius = 10.0F;
+  // Get data from config
+  const int shapeRadius = g_config.enemyConfig.shapeRadius;
+  sf::Color fillColor = {g_config.enemyConfig.fillColorRed, g_config.enemyConfig.fillColorGreen, g_config.enemyConfig.fillColorBlue};
+  sf::Color outlineColor = {g_config.enemyConfig.outlineColorRed, g_config.enemyConfig.outlineColorGreen, g_config.enemyConfig.outlineColorBlue};
 
   std::random_device randomDevice;
   std::mt19937 mt(randomDevice());
-  std::uniform_real_distribution<double> speedDistribution(1.0, 4.0);
-  std::uniform_real_distribution<double> angleDistribution(0.0, 2 * PI_F);
+  std::uniform_real_distribution<double> speedDistribution(g_config.enemyConfig.minSpeed, g_config.enemyConfig.maxSpeed);
+  std::uniform_real_distribution<double> angleDistribution(0.0F, 2 * PI_F);
   std::uniform_real_distribution<double> positionXDistribution(0.0 + shapeRadius, m_window.getSize().x - shapeRadius);
   std::uniform_real_distribution<double> positionYDistribution(0.0 + shapeRadius, m_window.getSize().y - shapeRadius);
+  std::uniform_int_distribution<int> verticesDistribution(g_config.enemyConfig.minNumOfVertices, g_config.enemyConfig.maxNumOfVertices);
 
   Vec2f pos (positionXDistribution(mt), positionYDistribution(mt));
   Vec2f velocity = Vec2f::polarToDescartes(speedDistribution(mt), angleDistribution(mt));
+  const int numOfVertices = verticesDistribution(mt);
 
+  std::cout << numOfVertices << std::endl;
+
+  // Create enemy entity
   std::shared_ptr<Entity> enemy = m_entityManager.addEntity("enemy");
 
-  enemy->cShape = std::make_shared<CShape>(5, shapeRadius, sf::Color::Green);
+  // Fill enemy entity
+  enemy->cShape = std::make_shared<CShape>(numOfVertices, shapeRadius, fillColor, outlineColor);
   enemy->cBoundingBox = std::make_shared<CBoundingBox>(shapeRadius);
   enemy->cCollision = std::make_shared<CCollision>(shapeRadius);
   enemy->cTransform = std::make_shared<CTransform>(pos, velocity, 0.0F);
