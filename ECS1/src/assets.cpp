@@ -42,3 +42,8 @@
   {
     return m_animations[name];
   }
+
+  void Assets::loadfromFile(std::string path)
+  {
+    // TODO: load assets from assets.txt
+  }

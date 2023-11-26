@@ -5,6 +5,15 @@
 SceneMenu::SceneMenu(GameEngine* gameEngine)
 {
   m_game = gameEngine;
+
+  m_menuStrings.push_back("proba1");
+  m_menuStrings.push_back("proba2");
+  m_menuStrings.push_back("proba3");
+
+  m_selectedMenuIndex = 0;
+
+  registerAction(sf::Keyboard::Down, "DOWN");
+  registerAction(sf::Keyboard::Up, "UP");
 }
 
 void SceneMenu::init(){}
@@ -34,5 +43,6 @@ void SceneMenu::sDoAction (const Action& action)
     {
       onEnd();
     }
+    std::cout << "Selected menuIndex is: " << m_selectedMenuIndex << " ,which is the string: " << m_menuStrings[m_selectedMenuIndex] << std::endl;
   }
 }

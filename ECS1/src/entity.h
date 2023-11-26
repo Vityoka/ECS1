@@ -23,13 +23,12 @@ class Entity
   size_t m_id = 0;
   ComponentTuple m_components;
 
-  // constructor is private so we can never create
-  // entities outside the EntityManager which had friend access
-  // I HAVE MADE IT PUBLIC, ITS EASIER
-  // Entity(const size_t & id, const std::string & tag);
-  // friend class EntityManager;
-
   public:
+    // constructor is private so we can never create
+    // entities outside the EntityManager which had friend access
+    // I HAVE MADE IT PUBLIC, ITS EASIER
+    // Entity(const size_t & id, const std::string & tag);
+    // friend class EntityManager;
     Entity(const size_t& id, const std::string& tag);
     void destroy();
     size_t getId() const;

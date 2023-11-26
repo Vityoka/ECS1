@@ -29,6 +29,7 @@ void Scene::simulate(const size_t frames)
 {
   
 }
+
 size_t Scene::width() const
 {
   return 1; //???
@@ -56,5 +57,5 @@ void Scene::drawLine(const Vec2f& p1, const Vec2f& p2)
 
 void Scene::doAction(const Action& action)
 {
-
+  sDoAction(action);
 }

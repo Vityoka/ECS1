@@ -27,10 +27,10 @@ public:
   Scene(GameEngine* gameEngine);
   
   virtual void update() = 0;
-  virtual void sDoAction (const Action & action) = 0;
+  virtual void sDoAction (const Action& action) = 0;
   virtual void sRender() = 0;
   
-  virtual void doAction(const Action& action);  //TODO: eredetileg a  =0 nem volt itt szal lehet irni kene vmit ide?
+  virtual void doAction(const Action& action);  //TODO: eredetileg a  =0 nem volt itt szal lehet irni kene vmit ide? Ez kétszer szerepel???? miért van sDoAction?
   void simulate(const size_t frames); // going to call the update() of the derived scene a couple times
   void registerAction(int inputKey, const std::string& actionName);
   

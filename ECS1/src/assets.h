@@ -16,6 +16,7 @@ private:
   std::map<std::string, Animation> m_animations;
 
 public:
+  void loadfromFile(std::string path);
   void addTexture(std::string name, std::string path);
   void addSound(std::string name, std::string path);
   void addFont(std::string name, std::string path);

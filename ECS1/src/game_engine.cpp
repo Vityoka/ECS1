@@ -1,5 +1,6 @@
 #include "game_engine.h"
 #include "scene_menu.h"
+#include "scene_play.h"
 #include "action.h"
 
 GameEngine::GameEngine(const std::string& path)
@@ -9,7 +10,7 @@ GameEngine::GameEngine(const std::string& path)
 
 void GameEngine::init(const std::string& path)
 {
-  // m_assets.loadfromFile(path); // It was not like this in the asset class arch
+  m_assets.loadfromFile(path); // It was not like this in the asset class arch
 
   m_window.create(sf::VideoMode(1280, 768), "COMP4300 Assignment3");
   m_window.setFramerateLimit(60);
@@ -21,6 +22,7 @@ void GameEngine::update()
 {
   //main loop
   sUserInput();
+  currentScene()->update();
 }
 
 void GameEngine::run()
@@ -61,7 +63,7 @@ void GameEngine::changeScene(const std::string& sceneName, std::shared_ptr<Scene
 {
   if (endCurrentScene)
   {
-    //m_sceneMap[m_currentScene] = destroy?
+    m_sceneMap.erase(m_currentScene);
   }
   m_sceneMap[sceneName] = scene;
   m_currentScene = sceneName;
@@ -96,7 +98,7 @@ void GameEngine::sUserInput()
       if (currentScene()->getActionMap().find(event.key.code) == currentScene()->getActionMap().end()) 
         { continue; }
       
-      // determine start or end action by whether it was key pres or release
+      // determine start or end action by whether it was key press or release
       const std::string actionType = (event.type == sf::Event::KeyPressed) ? "START" : "END";
       // look up the action and send the action to the scene
       currentScene()->doAction(Action(currentScene()->getActionMap().at(event.key.code), actionType));
