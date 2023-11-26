@@ -1,12 +1,12 @@
 #include <iostream>
 #include <SFML/Graphics.hpp>
 #include <SFML/Audio.hpp>
-#include "game.h"
+#include "game_engine.h"
 #include "entity.h"
 
 int main()
 {
-  Game game;
+  GameEngine game("./config.txt");
   game.run();
 
   return 0;

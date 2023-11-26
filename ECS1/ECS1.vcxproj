@@ -19,19 +19,33 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\action.cpp" />
+    <ClCompile Include="src\animation.cpp" />
+    <ClCompile Include="src\assets.cpp" />
     <ClCompile Include="src\config.cpp" />
     <ClCompile Include="src\entity.cpp" />
     <ClCompile Include="src\entity_manager.cpp" />
-    <ClCompile Include="src\game.cpp" />
+    <ClCompile Include="src\game_engine.cpp" />
     <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\physics.cpp" />
+    <ClCompile Include="src\scene.cpp" />
+    <ClCompile Include="src\scene_menu.cpp" />
+    <ClCompile Include="src\scene_play.cpp" />
     <ClCompile Include="src\vec2f.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\action.h" />
+    <ClInclude Include="src\animation.h" />
+    <ClInclude Include="src\assets.h" />
     <ClInclude Include="src\components.h" />
     <ClInclude Include="src\config.h" />
     <ClInclude Include="src\entity.h" />
     <ClInclude Include="src\entity_manager.h" />
-    <ClInclude Include="src\game.h" />
+    <ClInclude Include="src\game_engine.h" />
+    <ClInclude Include="src\physics.h" />
+    <ClInclude Include="src\scene.h" />
+    <ClInclude Include="src\scene_menu.h" />
+    <ClInclude Include="src\scene_play.h" />
     <ClInclude Include="src\vec2f.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

@@ -1,8 +1,8 @@
 #include "entity.h"
 
-Entity::Entity(const std::string& tag, int id)
-  :m_tag (tag)
-  ,m_id (id)
+Entity::Entity(const size_t & id, const std::string & tag)
+  : m_tag (tag)
+  , m_id (id)
 {
 
 }
@@ -12,13 +12,18 @@ const std::string& Entity::getTag() const
   return m_tag;
 }
 
-bool Entity::isAlive() const
+size_t Entity::getId() const
 {
-  return m_alive;
+  return m_id;
+}
+
+bool Entity::isActive() const
+{
+  return m_active;
 }
 
 void Entity::destroy()
 {
-  m_alive = false;
+  m_active = false;
 }
 

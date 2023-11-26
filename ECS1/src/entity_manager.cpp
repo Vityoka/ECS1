@@ -6,7 +6,7 @@ struct IsAlive
 {
   bool operator()(std::shared_ptr<Entity> entity)
   {
-    return entity->isAlive();
+    return entity->isActive();
   }
 };
 
@@ -14,7 +14,7 @@ struct IsNotAlive
 {
   bool operator()(std::shared_ptr<Entity> entity)
   {
-    return !entity->isAlive();
+    return !entity->isActive();
   }
 };
 
@@ -28,7 +28,7 @@ std::shared_ptr<Entity> EntityManager::addEntity(const std::string& tag)
 {
   // Create a new Entity object
   m_totalEntities++;
-  std::shared_ptr<Entity> newEntity = std::make_shared<Entity>(tag, m_totalEntities);
+  std::shared_ptr<Entity> newEntity = std::make_shared<Entity>(m_totalEntities, tag);
 
   // Add new entity to the waiting buffer
   m_toAdd.push_back(newEntity);
@@ -56,7 +56,7 @@ void EntityManager::update()
   for (std::shared_ptr<Entity> entity : m_entities)
   {
 
-    if (!entity->isAlive())
+    if (!entity->isActive())
     {
       // If we want to delete an element from a vector that we are just iterating through casues
       // iterator invalidation, which we have to deal with here.

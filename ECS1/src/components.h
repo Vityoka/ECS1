@@ -1,90 +1,89 @@
 #pragma once
 #include "vec2f.h"
 #include <SFML/Graphics.hpp>
+#include "animation.h"
+#include "assets.h"
 
-class CTransform
+class Component
 {
 public:
-    Vec2f pos = {};
-    Vec2f velocity = {};
-    float angle;
-
-    CTransform(const Vec2f& p, const Vec2f& v, float a)
-        :pos(p), velocity(v), angle(a){};
+  bool has = false;
 };
 
-class CShape
+class CTransform : public Component
 {
 public:
-    sf::CircleShape circle;
+  Vec2f pos      = {0.0, 0.0};
+  Vec2f prevPos  = {0.0, 0.0};
+  Vec2f scale    = {1.0, 1.0};
+  Vec2f velocity = {0.0, 0.0};
+  float angle    = 0.0F;
 
-    CShape(const sf::CircleShape c)
-        :circle(c){};
-
-    CShape(int numOfVertices, float radius, const sf::Color& fillColor, const sf::Color& outlineColor = sf::Color::White, const float thickness = 1.0F)
-        :circle(radius, numOfVertices)
-    {
-        circle.setFillColor(fillColor);
-        circle.setOutlineColor(outlineColor);
-        circle.setOutlineThickness(thickness);
-
-        // Set the 0,0 coordinate of the shape from the top left corner of the AABB of the circle to the middle of the circle
-        // This will cause that the setPosition function of the shape will put the middle of the circle to the given position.
-        circle.setOrigin(radius, radius);
-    }
+  CTransform() {};
+  CTransform(const Vec2f& p) 
+    : pos(p) {}
+  CTransform(const Vec2f& p, const Vec2f& sp, const Vec2f& sc, float a)
+    : pos(p)
+    , prevPos(p)
+    , velocity(sp)
+    , scale(sc)
+    , angle(a){}
 };
 
-
-class CCollision
+class CLifespan : public Component
 {
 public:
-    float radius = 0;
-    CCollision(float r) : radius(r){};
+  int lifespan = 0;
+  int frameCreated = 0;
+  CLifespan () {}
+  CLifespan (int duration, int frame)
+    : lifespan (duration), frameCreated(frame) {}
 };
 
-class CScore
+class CInput : public Component
 {
 public:
-    int score = 0;
-    CScore(int s) : score(s){};
+  bool up = false;
+  bool down = false;
+  bool left = false;
+  bool right = false;
+  bool shoot   = false;
+  bool canShoot = true;
+  bool canJump  = true;
+  CInput() {}
 };
 
-class CInput
+class CBoundingBox : public Component
 {
 public:
-    bool up = false;
-    bool down = false;
-    bool left = false;
-    bool right = false;
-    bool leftMouse = false;
-    bool rightMouse = false;
-    bool P = false;
-    bool ESC = false;
-
-    CInput(){};
+  Vec2f size;
+  Vec2f halfSize;
+  CBoundingBox() {}
+  CBoundingBox(const Vec2f& s)
+    : size(s), halfSize(s.x / 2, s.y / 2) {}
 };
 
-class CLifespan
+class CAnimation : public Component
 {
 public:
-    int totalLifespan = 0;
-    int remainingLifespan = 0;
-    CLifespan(int totalLifespan, int remainingLifespan)
-        : totalLifespan(totalLifespan)
-        , remainingLifespan(totalLifespan){};
+  Animation animation;
+  bool repeat = false;
+  CAnimation() {};
+  CAnimation(const Animation& animation, bool r = false) : animation (animation), repeat (r) {};
 };
 
-class CBoundingBox
+class CGravity : public Component
 {
 public:
-  // Extreme values for the axis aligned bounding boxes
-  float top = 0.0F;
-  float bottom = 0.0F;
-  float left = 0.0F;
-  float right = 0.0F;
-  // Radius for circular bounding box
-  float radius = 0.0F;
+  float gravity= 0;
+  CGravity() {}
+  CGravity (float g): gravity (g) {}
+};
 
-  CBoundingBox(float radius)
-    : radius(radius){};
+class CState : public Component
+{
+public:
+  std::string state = "jumping"; 
+  CState() {}
+  CState(const std::string& s): state(s) {}
 };
