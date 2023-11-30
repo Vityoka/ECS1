@@ -14,6 +14,11 @@ SceneMenu::SceneMenu(GameEngine* gameEngine)
 
   registerAction(sf::Keyboard::Down, "DOWN");
   registerAction(sf::Keyboard::Up, "UP");
+  registerAction(sf::Keyboard::D, "PLAY");
+
+  m_levelPaths.push_back("LEVEL1");
+  m_levelPaths.push_back("LEVEL2");
+  m_levelPaths.push_back("LEVEL3");
 }
 
 void SceneMenu::init(){}

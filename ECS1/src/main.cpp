@@ -6,7 +6,7 @@
 
 int main()
 {
-  GameEngine game("./config.txt");
+  GameEngine game("./src/assets.txt");
   game.run();
 
   return 0;
