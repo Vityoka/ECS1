@@ -1,7 +1,9 @@
-Texture TexPoleTop images/mario/flagtop.png
-Texture TexFlag  images/mario/flag.png
-Texture TexCoin  images/mario/flag.png
+Texture Player res/images/player.png
+Texture Sky  res/images/sky.png
+Texture Ground res/images/dirtBlock.png
+Texture Rock res/images/myFirstRock.png
 
+Animation Stand res/images/myFirstRock.png 1 0
 Animation Stand TexStand 1 0
 Animation Run TexRun 4 10
 Animation Air TexAir 1 0

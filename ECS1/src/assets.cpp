@@ -4,12 +4,12 @@
 
 void Assets::addTexture(std::string name, std::string path)
 {
-  sf::Texture texture;
-  if (!texture.loadFromFile(path))
+  m_textures[name] = sf::Texture();
+  if (!m_textures[name].loadFromFile(path))
   {
-    //std::cout << "Texture " << name << " on path " << path << " could not be loaded.\n";
+    std::cout << "Texture " << name << " on path " << path << " could not be loaded.\n";
+    m_textures.erase(name);
   }
-  m_textures[name] = texture;
 }
 void Assets::addSound(std::string name, std::string path)
 {
@@ -83,7 +83,7 @@ void Assets::loadfromFile(std::string path)
       }
       else if (str == "Animation")
       {
-        isTexture = true;
+        isAnimation = true;
       }
       if (isTexture)
       {
@@ -103,8 +103,8 @@ void Assets::loadfromFile(std::string path)
       {
         if (i >= 2)
         {
-          addTexture(name, str);
-          isTexture = false;
+          addAnimation(name, str);
+          isAnimation = false;
           i = 0;
         }
         else

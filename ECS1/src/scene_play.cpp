@@ -22,7 +22,7 @@ void ScenePlay::init(const std::string& levelPath)
   registerAction(sf::Keyboard::G, "TOGGLE_GRID"); // Toggle drawing (G)rid
   
   // TODO: Register all other gameplay Actions
-  m_gridText.setCharacterSize (12);
+  m_gridText.setCharacterSize(12);
   m_gridText.setFont(m_game->assets().getFont("Tech"));
   
   loadLevel(levelPath);
@@ -38,7 +38,7 @@ Vec2f ScenePlay::gridtoMidPixel (float gridX, float gridY, std::shared_ptr<Entit
   return Vec2f(0, 0);
 }
 
-void ScenePlay::loadLevel (const std::string & filename)
+void ScenePlay::loadLevel (const std::string& filename)
 {
   // reset the entity manager every time we load a level 
   m_entityManager = EntityManager();
