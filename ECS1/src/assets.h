@@ -20,7 +20,7 @@ public:
   void addTexture(std::string name, std::string path);
   void addSound(std::string name, std::string path);
   void addFont(std::string name, std::string path);
-  void addAnimation(std::string name, std::string path);
+  void addAnimation(std::string name, std::string textureName, size_t frameCount, size_t speed);
 
   sf::Texture& getTexture(std::string name);
   sf::SoundBuffer& getSound(std::string name); 

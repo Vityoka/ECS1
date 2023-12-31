@@ -1,9 +1,14 @@
-Texture Player res/images/player.png
-Texture Sky  res/images/sky.png
-Texture Ground res/images/dirtBlock.png
-Texture Rock res/images/myFirstRock.png
+Texture SajatPlayer res/images/player.png
+Texture SajatSky  res/images/sky.png
+Texture SajatGround res/images/dirtBlock.png
+Texture SajatRock res/images/myFirstRock.png
+Texture TexRun res/images/animations/megaRun.png
+Texture TexAir res/images/animations/megaJump.png
+Texture TexStand res/images/animations/megaStand.png
+Texture TexCoin res/images/animations/coinspin.png
+Texture TexExplode res/images/animations/explosion.png
+Texture TexGround res/images/mario/ground.png
 
-Animation Stand res/images/myFirstRock.png 1 0
 Animation Stand TexStand 1 0
 Animation Run TexRun 4 10
 Animation Air TexAir 1 0

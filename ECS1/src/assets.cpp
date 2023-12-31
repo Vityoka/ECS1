@@ -1,6 +1,7 @@
 #include "assets.h"
 #include <fstream>
 #include <iostream>
+#include <string>
 
 void Assets::addTexture(std::string name, std::string path)
 {
@@ -29,14 +30,10 @@ void Assets::addFont(std::string name, std::string path)
   }
   m_fonts[name] = font;
 }
-void Assets::addAnimation(std::string name, std::string path)
+
+void Assets::addAnimation(std::string name, std::string textureName, size_t frameCount, size_t speed)
 {
-  sf::Texture texture;
-  if (!texture.loadFromFile(path))
-  {
-    //std::cout << "Animation " << name << " on path " << path << " could not be loaded.\n";
-  }
-  Animation animation(name, texture);
+  Animation animation(name, m_textures[textureName], frameCount, speed);
   m_animations[name] = animation;
 }
 
@@ -70,6 +67,9 @@ void Assets::loadfromFile(std::string path)
   if (fin.is_open())
   {
     std::string name;
+    std::string textureName;
+    int animationFrameCount;
+    int animationSpeed;
     bool isTexture = false;
     bool isAnimation = false;
     int i = 0;
@@ -87,29 +87,45 @@ void Assets::loadfromFile(std::string path)
       }
       if (isTexture)
       {
+        if (i == 1)
+        {
+          name = str;
+        }
         if (i >= 2)
         {
-          addTexture(name, str);
+          std::string path = str;
+          addTexture(name, path);
           isTexture = false;
           i = 0;
         }
         else
         {
-          name = str;
           i++;
         }
       }
       else if(isAnimation)
       {
-        if (i >= 2)
+        if (i == 1)
         {
-          addAnimation(name, str);
+          name = str;
+        }
+        if (i == 2)
+        {
+          textureName = str;
+        }
+        if (i == 3)
+        {
+          animationFrameCount = std::stoi(str);
+        }
+        if (i >= 4)
+        {
+          animationSpeed = std::stoi(str);
+          addAnimation(name, textureName, animationFrameCount, animationSpeed);
           isAnimation = false;
           i = 0;
         }
         else
         {
-          name = str;
           i++;
         }
       }

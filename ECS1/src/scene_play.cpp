@@ -22,13 +22,14 @@ void ScenePlay::init(const std::string& levelPath)
   registerAction(sf::Keyboard::G, "TOGGLE_GRID"); // Toggle drawing (G)rid
   
   // TODO: Register all other gameplay Actions
+
   m_gridText.setCharacterSize(12);
   m_gridText.setFont(m_game->assets().getFont("Tech"));
   
   loadLevel(levelPath);
 }
 
-Vec2f ScenePlay::gridtoMidPixel (float gridX, float gridY, std::shared_ptr<Entity> entity)
+Vec2f ScenePlay::gridtoMidPixel(float gridX, float gridY, std::shared_ptr<Entity> entity)
 {
 // TODO: This function takes in a grid (x,y) position and an Entity
 // Return a Vec2 indicating where the CENTER position of the Entity should be 
@@ -38,7 +39,7 @@ Vec2f ScenePlay::gridtoMidPixel (float gridX, float gridY, std::shared_ptr<Entit
   return Vec2f(0, 0);
 }
 
-void ScenePlay::loadLevel (const std::string& filename)
+void ScenePlay::loadLevel(const std::string& filename)
 {
   // reset the entity manager every time we load a level 
   m_entityManager = EntityManager();
@@ -54,7 +55,7 @@ void ScenePlay::loadLevel (const std::string& filename)
   // some sample entities
   auto brick = m_entityManager.addEntity("tile");
 
-  // IMPORTANT: always add the CAnimation component first so that gridToMid Pixel can compute correctly
+  // IMPORTANT: always add the CAnimation component first so that gridToMidPixel can compute correctly
   brick->addComponent<CAnimation>(m_game->assets().getAnimation("Brick"), true);
   brick->addComponent<CTransform> (Vec2f(96, 480));
 
@@ -94,9 +95,9 @@ void ScenePlay::spawnPlayer()
 {
   // here is a sample player entity which you can use to construct other entities 
   m_player = m_entityManager.addEntity("player");
-  m_player->addComponent<CAnimation> (m_game->assets().getAnimation ("Stand"), true);
-  m_player->addComponent<CTransform> (Vec2f(224, 352)); 
-  m_player->addComponent<CBoundingBox> (Vec2f(48, 48)); 
+  m_player->addComponent<CAnimation>(m_game->assets().getAnimation ("Stand"), true);
+  m_player->addComponent<CTransform>(Vec2f(224, 352)); 
+  m_player->addComponent<CBoundingBox>(Vec2f(48, 48)); 
   m_player->addComponent<CGravity>(0.1F);
 
   // TODO: be sure to add the remaining components to the player
@@ -134,7 +135,7 @@ void ScenePlay::sCollision()
 
 void ScenePlay::sMovement()
 {
-  Vec2f playerVelocity (0, 0);
+  Vec2f playerVelocity(0, 0);
   if (m_player->getComponent<CInput>().up)
   {
     m_player->getComponent<CState>().state = "run";
@@ -168,24 +169,46 @@ void ScenePlay::update()
 void ScenePlay::sDoAction (const Action& action)
 {
   if (action.type() == "START")
+  {
     if (action.name() == "TOGGLE TEXTURE") { m_drawTextures = !m_drawTextures; } 
-    else if  (action.name() == "TOGGLE_COLLISION") { m_drawCollision = !m_drawCollision; } 
+    else if (action.name() == "TOGGLE_COLLISION") { m_drawCollision = !m_drawCollision; } 
     else if (action.name() == "TOGGLE_GRID") { m_drawGrid = !m_drawGrid; }
-     else if (action.name()  == "PAUSE") { setPaused(m_paused); }
+    else if (action.name() == "PAUSE") { setPaused(m_paused); }
     else if (action.name() == "QUIT") { onEnd(); }
     else if (action.name() == "UP")
     {
       m_player->getComponent<CInput>().up = true;
     }
-
+    else if (action.name() == "LEFT")
+    {
+      m_player->getComponent<CInput>().left = true;
+    }
+    else if (action.name() == "RIGHT")
+    {
+      m_player->getComponent<CInput>().right = true;
+    }
+    else if (action.name() == "DOWN")
+    {
+      m_player->getComponent<CInput>().down = true;
+    }
+  }
   else if (action.type() == "END")
   {
     if (action.name() == "UP")
     {
       m_player->getComponent<CInput>().up = false;
-
-
-      //...
+    }
+    else if (action.name() == "LEFT")
+    {
+      m_player->getComponent<CInput>().left = false;
+    }
+    else if (action.name() == "RIGHT")
+    {
+      m_player->getComponent<CInput>().right = false;
+    }
+    else if (action.name() == "DOWN")
+    {
+      m_player->getComponent<CInput>().down = false;
     }
   }
 }

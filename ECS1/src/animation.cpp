@@ -5,17 +5,17 @@ Animation::Animation()
 {
 }
 
-Animation::Animation (const std::string& name, const sf::Texture& t)
+Animation::Animation(const std::string& name, const sf::Texture& t)
 : Animation(name, t, 1, 0)
 {
 }
 
-Animation::Animation (const std::string& name, const sf::Texture& t, size_t frameCount, size_t speed)
-  : m_name (name) 
-  , m_sprite (t)
-  , m_frameCount (frameCount)
+Animation::Animation(const std::string& name, const sf::Texture& t, size_t frameCount, size_t speed)
+  : m_name(name) 
+  , m_sprite(t)
+  , m_frameCount(frameCount)
   , m_gameFrame(0)
-  , m_speed (speed)
+  , m_speed(speed)
 {
   m_size = Vec2f((float)t.getSize().x / frameCount, (float)t.getSize().y);
   m_sprite.setOrigin (m_size.x / 2.0f, m_size.y / 2.0f);
