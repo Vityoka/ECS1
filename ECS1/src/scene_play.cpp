@@ -46,7 +46,7 @@ void ScenePlay::loadLevel(const std::string& filename)
   m_entityManager = EntityManager();
 
   // TODO: read in the level file and add the appropriate entities
-  //   use the PlayerConfig struct m_playerConfig to store player properties 
+  //   use the PlayerConfig struct m_m_playerConfig to store player properties 
   //   this struct is defined at the top of ScenePlay.h
   // NOTE: all of the code below is sample code which shows you how to
   //   set up and use entities with the new syntax, it should be removed
@@ -62,7 +62,6 @@ void ScenePlay::loadLevel(const std::string& filename)
     std::string name;
     int i = 0;
     std::shared_ptr<Entity> entity;
-    PlayerConfig playerConfig;
     int posX;
     int posY;
     int CW;
@@ -93,39 +92,39 @@ void ScenePlay::loadLevel(const std::string& filename)
       {
         if (i == 1)
         {
-          playerConfig.X = std::stoi(str);
+          m_playerConfig.X = std::stoi(str);
         }
         if (i == 2)
         {
-          playerConfig.Y = std::stoi(str);
+          m_playerConfig.Y = std::stoi(str);
         }
         if (i == 3)
         {
-          playerConfig.CX = std::stoi(str);
+          m_playerConfig.CX = std::stoi(str);
         }
         if (i == 4)
         {
-          playerConfig.CY = std::stoi(str);
+          m_playerConfig.CY = std::stoi(str);
         }
         if (i == 5)
         {
-          playerConfig.SPEED = std::stoi(str);
+          m_playerConfig.SPEED = std::stoi(str);
         }
         if (i == 6)
         {
-          playerConfig.JUMP = std::stoi(str);
+          m_playerConfig.JUMP = std::stoi(str);
         }
         if (i == 7)
         {
-          playerConfig.MAXSPEED = std::stoi(str);
+          m_playerConfig.MAXSPEED = std::stoi(str);
         }
         if (i == 8)
         {
-          playerConfig.GRAVITY = std::stoi(str);
+          m_playerConfig.GRAVITY = std::stoi(str);
         }
         if (i >= 9)
         {
-          playerConfig.WEAPON = str;
+          m_playerConfig.WEAPON = str;
           i = 0;
         }
         else
@@ -155,7 +154,7 @@ void ScenePlay::loadLevel(const std::string& filename)
         }
       }
     }
-    spawnPlayer(playerConfig);
+    spawnPlayer();
   }
  
 
@@ -204,14 +203,14 @@ void ScenePlay::loadLevel(const std::string& filename)
   // auto& transform2 = entity->get<CTransform>()
 }
 
-void ScenePlay::spawnPlayer(PlayerConfig& playerConfig)
+void ScenePlay::spawnPlayer()
 {
   // here is a sample player entity which you can use to construct other entities
   m_player = m_entityManager.addEntity("player");
   m_player->addComponent<CAnimation>(m_game->assets().getAnimation ("Stand"), true);
-  m_player->addComponent<CTransform>(Vec2f(playerConfig.X, playerConfig.Y)); 
-  m_player->addComponent<CBoundingBox>(Vec2f(playerConfig.CX, playerConfig.CY)); 
-  m_player->addComponent<CGravity>(playerConfig.GRAVITY);
+  m_player->addComponent<CTransform>(Vec2f(m_playerConfig.X, m_playerConfig.Y)); 
+  m_player->addComponent<CBoundingBox>(Vec2f(m_playerConfig.CX, m_playerConfig.CY)); 
+  m_player->addComponent<CGravity>(m_playerConfig.GRAVITY);
 
   // TODO: be sure to add the remaining components to the player
 }
