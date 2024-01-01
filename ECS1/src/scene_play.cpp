@@ -30,14 +30,17 @@ void ScenePlay::init(const std::string& levelPath)
   loadLevel(levelPath);
 }
 
-Vec2f ScenePlay::gridtoMidPixel(float gridX, float gridY, std::shared_ptr<Entity> entity)
+Vec2f ScenePlay::gridToMidPixel(float gridX, float gridY, std::shared_ptr<Entity> entity)
 {
-// TODO: This function takes in a grid (x,y) position and an Entity
-// Return a Vec2 indicating where the CENTER position of the Entity should be 
-// You must use the Entity's Animation size to position it correctly
-// The size of the grid width and height is stored in m_gridSize.x and m_gridSize.y
-// The bottom-left corner of the Animation should align with the bottom left of the grid cell
-  return Vec2f(0, 0);
+  // TODO: This function takes in a grid (x,y) position and an Entity
+  // Return a Vec2 indicating where the CENTER position of the Entity should be 
+  // You must use the Entity's Animation size to position it correctly
+  // The size of the grid width and height is stored in m_gridSize.x and m_gridSize.y
+  // The bottom-left corner of the Animation should align with the bottom left of the grid cell
+  float centerX = gridX * m_gridSize.x + entity->getComponent<CAnimation>().animation.getSize().x / 2.0F;
+  float centerY = m_game->window().getSize().y - (gridY * m_gridSize.y + entity->getComponent<CAnimation>().animation.getSize().y / 2.0F);
+  Vec2f center(centerX, centerY);
+  return center;
 }
 
 void ScenePlay::loadLevel(const std::string& filename)
@@ -45,12 +48,7 @@ void ScenePlay::loadLevel(const std::string& filename)
   // reset the entity manager every time we load a level 
   m_entityManager = EntityManager();
 
-  // TODO: read in the level file and add the appropriate entities
-  //   use the PlayerConfig struct m_m_playerConfig to store player properties 
-  //   this struct is defined at the top of ScenePlay.h
-  // NOTE: all of the code below is sample code which shows you how to
-  //   set up and use entities with the new syntax, it should be removed
-
+  // parse level.txt file
   std::ifstream fin;
   std::string line;
   std::string str;
@@ -64,12 +62,6 @@ void ScenePlay::loadLevel(const std::string& filename)
     std::shared_ptr<Entity> entity;
     int posX;
     int posY;
-    int CW;
-    int CH;
-    int SX;
-    int SY;
-    int SM;
-    int GY;
     bool isPlayer = false;
     std::string B;
 
@@ -145,7 +137,7 @@ void ScenePlay::loadLevel(const std::string& filename)
         if (i >= 3)
         {
           posY = std::stoi(str);
-          entity->addComponent<CTransform>(Vec2f(posX, posY));
+          entity->addComponent<CTransform>(gridToMidPixel(posX, posY, entity));
           i = 0;
         }
         else
@@ -208,7 +200,7 @@ void ScenePlay::spawnPlayer()
   // here is a sample player entity which you can use to construct other entities
   m_player = m_entityManager.addEntity("player");
   m_player->addComponent<CAnimation>(m_game->assets().getAnimation ("Stand"), true);
-  m_player->addComponent<CTransform>(Vec2f(m_playerConfig.X, m_playerConfig.Y)); 
+  m_player->addComponent<CTransform>(gridToMidPixel(m_playerConfig.X, m_playerConfig.Y, m_player));
   m_player->addComponent<CBoundingBox>(Vec2f(m_playerConfig.CX, m_playerConfig.CY)); 
   m_player->addComponent<CGravity>(m_playerConfig.GRAVITY);
 

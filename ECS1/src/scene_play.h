@@ -27,7 +27,7 @@ public:
   ScenePlay(GameEngine* gameEngine, const std::string& levelPath);
   void init(const std::string & levelPath);
 
-  Vec2f gridtoMidPixel(float gridX, float gridY, std::shared_ptr<Entity> entity);
+  Vec2f gridToMidPixel(float gridX, float gridY, std::shared_ptr<Entity> entity);
   void sDoAction(const Action& action);
   void loadLevel(const std::string& filename);
   void spawnPlayer();

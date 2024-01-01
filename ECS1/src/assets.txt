@@ -1,4 +1,6 @@
 Texture SajatPlayer res/images/player.png
+Texture TexDwarf res/images/dwarf_1.png
+Texture TexMonster res/images/1.png
 Texture SajatSky  res/images/sky.png
 Texture SajatGround res/images/dirtBlock.png
 Texture SajatRock res/images/myFirstRock.png
@@ -11,7 +13,7 @@ Texture TexGround res/images/mario/ground.png
 Texture TexBuster res/images/animations/megaBuster.png
 
 Animation Ground TexGround 1 0
-Animation Stand TexStand 1 0
+Animation Stand TexDwarf 1 0
 Animation Run TexRun 4 10
 Animation Air TexAir 1 0
 Animation Buster TexBuster 1 0

@@ -10,5 +10,15 @@ Tile Ground 8 0
 Tile Ground 9 0
 Tile Ground 10 0
 Tile Ground 11 0
-Tile Ground 12 0
-Player 1 1 48 48 5 -20 20 0.75 Buster 
+Tile Ground 0 0
+Tile Ground 1 4
+Tile Ground 2 4
+Tile Ground 3 4
+Tile Ground 4 4
+Tile Ground 5 4
+Tile Ground 6 4
+Tile Ground 7 4
+Tile Ground 8 4
+Tile Ground 13 6
+Tile Ground 14 6
+Player 4 1 32 32 5 -20 20 0.75 Buster 
