@@ -436,6 +436,8 @@ void ScenePlay::sRender()
       }
     }
   }
+
+  m_game->window().display();
 }
 
 
