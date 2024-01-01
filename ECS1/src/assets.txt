@@ -8,10 +8,14 @@ Texture TexStand res/images/animations/megaStand.png
 Texture TexCoin res/images/animations/coinspin.png
 Texture TexExplode res/images/animations/explosion.png
 Texture TexGround res/images/mario/ground.png
+Texture TexBuster res/images/animations/megaBuster.png
 
+Animation Ground TexGround 1 0
 Animation Stand TexStand 1 0
 Animation Run TexRun 4 10
 Animation Air TexAir 1 0
 Animation Buster TexBuster 1 0
 Animation Explosion TexExplode 48 2
 Animation Coin TexCoin 6 5
+
+Font Tech res/fonts/tech.ttf

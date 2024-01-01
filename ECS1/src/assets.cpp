@@ -39,18 +39,37 @@ void Assets::addAnimation(std::string name, std::string textureName, size_t fram
 
 sf::Texture& Assets::getTexture(std::string name)
 {
+  if (m_textures.count(name) == 0)
+  {
+    std::cout << "Requested texture called " << name << " does not exist!\n";
+  }
   return m_textures[name];
 }
+
 sf::SoundBuffer& Assets::getSound(std::string name)
 {
+  if (m_sounds.count(name) == 0)
+  {
+    std::cout << "Requested sound called " << name << " does not exist!\n";
+  }
   return m_sounds[name];
-} 
+}
+
 sf::Font& Assets::getFont(std::string name)
 {
+  if (m_fonts.count(name) == 0)
+  {
+    std::cout << "Requested font called " << name << " does not exist!\n";
+  }
   return m_fonts[name];
 }
+
 Animation& Assets::getAnimation(std::string name)
 {
+  if (m_animations.count(name) == 0)
+  {
+    std::cout << "Requested animation called " << name << " does not exist!\n";
+  }
   return m_animations[name];
 }
 
@@ -72,6 +91,7 @@ void Assets::loadfromFile(std::string path)
     int animationSpeed;
     bool isTexture = false;
     bool isAnimation = false;
+    bool isFont = false;
     int i = 0;
 
     std::cout << "assets.txt found" << std::endl;
@@ -85,6 +105,10 @@ void Assets::loadfromFile(std::string path)
       {
         isAnimation = true;
       }
+      else if (str == "Font")
+      {
+        isFont = true;
+      }
       if (isTexture)
       {
         if (i == 1)
@@ -96,6 +120,24 @@ void Assets::loadfromFile(std::string path)
           std::string path = str;
           addTexture(name, path);
           isTexture = false;
+          i = 0;
+        }
+        else
+        {
+          i++;
+        }
+      }
+      else if (isFont)
+      {
+        if (i == 1)
+        {
+          name = str;
+        }
+        if (i >= 2)
+        {
+          std::string path = str;
+          addFont(name, path);
+          isFont = false;
           i = 0;
         }
         else

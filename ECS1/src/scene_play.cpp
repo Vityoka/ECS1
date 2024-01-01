@@ -5,6 +5,7 @@
 #include "components.h"
 #include "action.h"
 #include <iostream>
+#include <fstream>
 
 ScenePlay::ScenePlay(GameEngine* gameEngine, const std::string & levelPath)
   : Scene(gameEngine)
@@ -50,32 +51,147 @@ void ScenePlay::loadLevel(const std::string& filename)
   // NOTE: all of the code below is sample code which shows you how to
   //   set up and use entities with the new syntax, it should be removed
 
-  spawnPlayer();
+  std::ifstream fin;
+  std::string line;
+  std::string str;
+  static int i = 0;
+  fin.open(filename);
 
-  // some sample entities
-  auto brick = m_entityManager.addEntity("tile");
-
-  // IMPORTANT: always add the CAnimation component first so that gridToMidPixel can compute correctly
-  brick->addComponent<CAnimation>(m_game->assets().getAnimation("Brick"), true);
-  brick->addComponent<CTransform> (Vec2f(96, 480));
-
-  // NOTE: You final code should position the entity with the grid x,y position read from the file:
-  // brick->addComponent<CTransform> (gridToMidPixel (gridX, gridy, brick);
-
-  if (brick->getComponent<CAnimation>().animation.getName() == "Brick")
+  if (fin.is_open())
   {
-    std::cout << "This could be a good way identifying if a tile is a brick!\n";
+    std::string name;
+    int i = 0;
+    std::shared_ptr<Entity> entity;
+    int posX;
+    int posY;
+    int CW;
+    int CH;
+    int SX;
+    int SY;
+    int SM;
+    int GY;
+    bool isPlayer = false;
+    std::string B;
+
+    std::cout << "Descriptor for current level (" << filename << ") was found." << std::endl;
+    while (fin >> str)
+    {
+      if (i == 0)
+      {
+        if (str == "Tile")
+        {
+          isPlayer = false;
+          entity = m_entityManager.addEntity("tile");
+        }
+        if (str == "Player")
+        {
+          isPlayer = true;
+          m_player = m_entityManager.addEntity("player");
+          m_player->addComponent<CAnimation>(m_game->assets().getAnimation ("Stand"), true);
+        }
+      }
+      if (isPlayer)
+      {
+        if (i == 1)
+        {
+          posX = std::stoi(str);
+        }
+        if (i == 2)
+        {
+          posY = std::stoi(str);
+          m_player->addComponent<CTransform>(Vec2f(posX, posY));
+        }
+        if (i == 3)
+        {
+          CW = std::stoi(str);
+        }
+        if (i == 4)
+        {
+          CH = std::stoi(str);
+          m_player->addComponent<CBoundingBox>(Vec2f(CW, CH));
+        }
+        if (i == 5)
+        {
+          SX = std::stoi(str);
+        }
+        if (i == 6)
+        {
+          SY = std::stoi(str);
+        }
+        if (i == 7)
+        {
+          SM = std::stoi(str);
+        }
+        if (i == 8)
+        {
+          GY = std::stoi(str);
+          m_player->addComponent<CGravity>(GY);
+        }
+        if (i >= 9)
+        {
+          B = str;
+          i = 0;
+        }
+        else
+        {
+          i++;
+        }
+      }
+      else // not player, currently it can be tile only
+      {
+        if (i == 1)
+        {
+          entity->addComponent<CAnimation>(m_game->assets().getAnimation(str), true);
+        }
+        if (i == 2)
+        {
+          posX = std::stoi(str);
+        }
+        if (i >= 3)
+        {
+          posY = std::stoi(str);
+          entity->addComponent<CTransform>(Vec2f(posX, posY));
+          i = 0;
+        }
+        else
+        {
+          i++;
+        }
+      }
+
+    }
   }
 
-  auto block = m_entityManager.addEntity("tile");
-  block->addComponent<CAnimation> (m_game->assets().getAnimation("Block"), true);
-  block->addComponent<CTransform> (Vec2f(224, 480));
-  // add a bounding box, this will now show up if we press the 'C' key
-  block->addComponent<CBoundingBox> (m_game->assets().getAnimation("Block").getSize());
+  // SAMPLE CODE BEGIN
+  /*
+    spawnPlayer();
 
-  auto question = m_entityManager.addEntity("tile");
-  question->addComponent<CAnimation>(m_game->assets().getAnimation("Question"), true);
-  question->addComponent<CTransform> (Vec2f(352, 480));
+    // some sample entities
+    auto brick = m_entityManager.addEntity("tile");
+
+    // IMPORTANT: always add the CAnimation component first so that gridToMidPixel can compute correctly
+    brick->addComponent<CAnimation>(m_game->assets().getAnimation("Brick"), true);
+    brick->addComponent<CTransform> (Vec2f(96, 480));
+
+    // NOTE: You final code should position the entity with the grid x,y position read from the file:
+    // brick->addComponent<CTransform> (gridToMidPixel (gridX, gridy, brick);
+
+    if (brick->getComponent<CAnimation>().animation.getName() == "Brick")
+    {
+      std::cout << "This could be a good way identifying if a tile is a brick!\n";
+    }
+
+    auto block = m_entityManager.addEntity("tile");
+    block->addComponent<CAnimation> (m_game->assets().getAnimation("Block"), true);
+    block->addComponent<CTransform> (Vec2f(224, 480));
+    // add a bounding box, this will now show up if we press the 'C' key
+    block->addComponent<CBoundingBox> (m_game->assets().getAnimation("Block").getSize());
+
+    auto question = m_entityManager.addEntity("tile");
+    question->addComponent<CAnimation>(m_game->assets().getAnimation("Question"), true);
+    question->addComponent<CTransform> (Vec2f(352, 480));
+  */
+  // SAMPLE CODE END
 
   // NOTE: THIS IS INCREDIBLY IMPORTANT PLEASE READ THIS EXAMPLE
   //Components are now returned as references rather than pointers
@@ -93,7 +209,7 @@ void ScenePlay::loadLevel(const std::string& filename)
 
 void ScenePlay::spawnPlayer()
 {
-  // here is a sample player entity which you can use to construct other entities 
+  // here is a sample player entity which you can use to construct other entities
   m_player = m_entityManager.addEntity("player");
   m_player->addComponent<CAnimation>(m_game->assets().getAnimation ("Stand"), true);
   m_player->addComponent<CTransform>(Vec2f(224, 352)); 
@@ -158,10 +274,10 @@ void ScenePlay::update()
 {
   m_entityManager.update();
   // TODO: implement pause functionality
-  sMovement();
-  sLifespan();
-  sCollision();
-  sAnimation();
+  //sMovement();
+  //sLifespan();
+  //sCollision();
+  //sAnimation();
   sRender();
 }
 
