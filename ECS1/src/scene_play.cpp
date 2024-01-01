@@ -62,6 +62,7 @@ void ScenePlay::loadLevel(const std::string& filename)
     std::string name;
     int i = 0;
     std::shared_ptr<Entity> entity;
+    PlayerConfig playerConfig;
     int posX;
     int posY;
     int CW;
@@ -86,50 +87,45 @@ void ScenePlay::loadLevel(const std::string& filename)
         if (str == "Player")
         {
           isPlayer = true;
-          m_player = m_entityManager.addEntity("player");
-          m_player->addComponent<CAnimation>(m_game->assets().getAnimation ("Stand"), true);
         }
       }
       if (isPlayer)
       {
         if (i == 1)
         {
-          posX = std::stoi(str);
+          playerConfig.X = std::stoi(str);
         }
         if (i == 2)
         {
-          posY = std::stoi(str);
-          m_player->addComponent<CTransform>(Vec2f(posX, posY));
+          playerConfig.Y = std::stoi(str);
         }
         if (i == 3)
         {
-          CW = std::stoi(str);
+          playerConfig.CX = std::stoi(str);
         }
         if (i == 4)
         {
-          CH = std::stoi(str);
-          m_player->addComponent<CBoundingBox>(Vec2f(CW, CH));
+          playerConfig.CY = std::stoi(str);
         }
         if (i == 5)
         {
-          SX = std::stoi(str);
+          playerConfig.SPEED = std::stoi(str);
         }
         if (i == 6)
         {
-          SY = std::stoi(str);
+          playerConfig.JUMP = std::stoi(str);
         }
         if (i == 7)
         {
-          SM = std::stoi(str);
+          playerConfig.MAXSPEED = std::stoi(str);
         }
         if (i == 8)
         {
-          GY = std::stoi(str);
-          m_player->addComponent<CGravity>(GY);
+          playerConfig.GRAVITY = std::stoi(str);
         }
         if (i >= 9)
         {
-          B = str;
+          playerConfig.WEAPON = str;
           i = 0;
         }
         else
@@ -158,9 +154,10 @@ void ScenePlay::loadLevel(const std::string& filename)
           i++;
         }
       }
-
     }
+    spawnPlayer(playerConfig);
   }
+ 
 
   // SAMPLE CODE BEGIN
   /*
@@ -207,14 +204,14 @@ void ScenePlay::loadLevel(const std::string& filename)
   // auto& transform2 = entity->get<CTransform>()
 }
 
-void ScenePlay::spawnPlayer()
+void ScenePlay::spawnPlayer(PlayerConfig& playerConfig)
 {
   // here is a sample player entity which you can use to construct other entities
   m_player = m_entityManager.addEntity("player");
   m_player->addComponent<CAnimation>(m_game->assets().getAnimation ("Stand"), true);
-  m_player->addComponent<CTransform>(Vec2f(224, 352)); 
-  m_player->addComponent<CBoundingBox>(Vec2f(48, 48)); 
-  m_player->addComponent<CGravity>(0.1F);
+  m_player->addComponent<CTransform>(Vec2f(playerConfig.X, playerConfig.Y)); 
+  m_player->addComponent<CBoundingBox>(Vec2f(playerConfig.CX, playerConfig.CY)); 
+  m_player->addComponent<CGravity>(playerConfig.GRAVITY);
 
   // TODO: be sure to add the remaining components to the player
 }
