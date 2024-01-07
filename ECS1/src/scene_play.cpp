@@ -138,6 +138,7 @@ void ScenePlay::loadLevel(const std::string& filename)
         {
           posY = std::stoi(str);
           entity->addComponent<CTransform>(gridToMidPixel(posX, posY, entity));
+          entity->addComponent<CBoundingBox>(m_game->assets().getAnimation("Ground").getSize());
           i = 0;
         }
         else
@@ -403,7 +404,7 @@ void ScenePlay::sRender()
   {
     float leftX = m_game->window().getView().getCenter().x - width() / 2;
     float rightX = leftX + width() + m_gridSize.x;
-    float nextGridX = leftX - ((int) leftX % (int)m_gridSize.x);
+    float nextGridX = leftX - ((int)leftX % (int)m_gridSize.x);
 
     for (float x = nextGridX; x < rightX; x += m_gridSize.x)
     {
