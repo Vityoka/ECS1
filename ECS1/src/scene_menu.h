@@ -16,13 +16,13 @@ protected:
   size_t                   m_selectedMenuIndex = 0;
 
   void init();
-  void update();
-  void onEnd();
-  void sDoAction (const Action& action);
+  void update() final;
+  void onEnd() final;
+  void sDoAction (const Action& action) final;
 
 public:
   SceneMenu(GameEngine* gameEngine = nullptr);
-  void sRender();
+  void sRender() final;
 
   //...
 };

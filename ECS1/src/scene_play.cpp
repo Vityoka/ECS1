@@ -21,6 +21,10 @@ void ScenePlay::init(const std::string& levelPath)
   registerAction(sf::Keyboard::T, "TOGGLE TEXTURE");  // Toggle drawing (T)extures 
   registerAction(sf::Keyboard::C, "TOGGLE_COLLISION"); // Toggle drawing (C)ollision Boxes /
   registerAction(sf::Keyboard::G, "TOGGLE_GRID"); // Toggle drawing (G)rid
+  registerAction(sf::Keyboard::W, "UP");
+  registerAction(sf::Keyboard::A, "LEFT");
+  registerAction(sf::Keyboard::S, "DOWN");
+  registerAction(sf::Keyboard::D, "RIGHT");
   
   // TODO: Register all other gameplay Actions
 
@@ -243,9 +247,25 @@ void ScenePlay::sMovement()
   Vec2f playerVelocity(0, 0);
   if (m_player->getComponent<CInput>().up)
   {
-    m_player->getComponent<CState>().state = "run";
+    m_player->getComponent<CState>().state = "jumping";
     playerVelocity.y = -3;
   }
+  if (m_player->getComponent<CInput>().down)
+  {
+    m_player->getComponent<CState>().state = "run";
+    playerVelocity.y = 0;
+  }
+  if (m_player->getComponent<CInput>().left)
+  {
+    m_player->getComponent<CState>().state = "run";
+    playerVelocity.x = -3;
+  }
+  if (m_player->getComponent<CInput>().right)
+  {
+    m_player->getComponent<CState>().state = "run";
+    playerVelocity.x = 3;
+  }
+
   m_player->getComponent<CTransform>().velocity = playerVelocity;
 
   for (auto e : m_entityManager.getEntities())
@@ -263,13 +283,12 @@ void ScenePlay::update()
 {
   m_entityManager.update();
   // TODO: implement pause functionality
-  //sMovement();
+  sMovement();
   //sLifespan();
   //sCollision();
   //sAnimation();
   sRender();
 }
-
 
 void ScenePlay::sDoAction (const Action& action)
 {
