@@ -35,8 +35,7 @@ void GameEngine::run()
 
 void GameEngine::quit()
 {
-  //quit game
-
+  m_running = false;
 }
 
 bool GameEngine::isRunning()
